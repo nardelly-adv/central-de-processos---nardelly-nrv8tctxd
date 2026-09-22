@@ -5,6 +5,8 @@ import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import Index from './pages/Index'
 import NotFound from './pages/NotFound'
+import Login from './pages/Login'
+import AdminUsuarios from './pages/AdminUsuarios'
 import Layout from './components/Layout'
 
 // ONLY IMPORT AND RENDER WORKING PAGES, NEVER ADD PLACEHOLDER COMPONENTS OR PAGES IN THIS FILE
@@ -19,6 +21,8 @@ const App = () => (
         <Route element={<Layout />}>
           <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES MUST BE ADDED HERE */}
+          <Route path="/entrar" element={<Login />} />
+          <Route path="/admin/usuarios" element={<AdminUsuarios />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

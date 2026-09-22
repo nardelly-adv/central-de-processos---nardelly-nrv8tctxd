@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-09-22T20:13:08.682Z",
+  "generatedAt": "2026-09-22T20:21:35.248Z",
   "collections": [
     {
       "name": "users",
       "type": "auth",
       "apiRules": {
-        "list": "id = @request.auth.id",
-        "view": "id = @request.auth.id",
-        "create": "",
-        "update": "id = @request.auth.id",
-        "delete": "id = @request.auth.id"
+        "list": "@request.auth.ativo = true && (@request.auth.papel = 'administracao' || id = @request.auth.id)",
+        "view": "@request.auth.ativo = true && (@request.auth.papel = 'administracao' || id = @request.auth.id)",
+        "create": "@request.auth.ativo = true && @request.auth.papel = 'administracao'",
+        "update": "@request.auth.ativo = true && (@request.auth.papel = 'administracao' || id = @request.auth.id)",
+        "delete": null
       },
       "fields": [
         {
@@ -29,20 +29,98 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
+        },
+        {
+          "name": "papel",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "atendimento",
+            "cadastro",
+            "operacao_documental",
+            "triagem_juridica",
+            "advogado_responsavel",
+            "supervisao",
+            "administracao"
+          ]
+        },
+        {
+          "name": "ativo",
+          "type": "bool",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [
         "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
         "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
       ]
+    },
+    {
+      "name": "casos",
+      "type": "base",
+      "apiRules": {
+        "list": null,
+        "view": null,
+        "create": "@request.auth.ativo = true && (@request.auth.papel = 'atendimento' || @request.auth.papel = 'cadastro')",
+        "update": null,
+        "delete": null
+      },
+      "fields": [],
+      "indexes": []
+    },
+    {
+      "name": "pendencias",
+      "type": "base",
+      "apiRules": {
+        "list": null,
+        "view": null,
+        "create": "@request.auth.ativo = true && (@request.auth.papel = 'cadastro' || @request.auth.papel = 'operacao_documental')",
+        "update": null,
+        "delete": null
+      },
+      "fields": [],
+      "indexes": []
+    },
+    {
+      "name": "rotas_triagem",
+      "type": "base",
+      "apiRules": {
+        "list": null,
+        "view": null,
+        "create": "@request.auth.ativo = true && @request.auth.papel = 'triagem_juridica'",
+        "update": null,
+        "delete": null
+      },
+      "fields": [],
+      "indexes": []
+    },
+    {
+      "name": "auditoria",
+      "type": "base",
+      "apiRules": {
+        "list": null,
+        "view": null,
+        "create": null,
+        "update": null,
+        "delete": null
+      },
+      "fields": [],
+      "indexes": []
     }
   ]
 }
