@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T20:21:35.248Z",
+  "generatedAt": "2026-09-22T20:34:44.772Z",
   "collections": [
     {
       "name": "users",
@@ -29,14 +29,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "papel",
@@ -69,52 +74,177 @@
       "name": "casos",
       "type": "base",
       "apiRules": {
-        "list": null,
-        "view": null,
+        "list": "@request.auth.ativo = true && @request.auth.papel != 'administracao' && @request.auth.papel != ''",
+        "view": "@request.auth.ativo = true && @request.auth.papel != 'administracao' && @request.auth.papel != ''",
         "create": "@request.auth.ativo = true && (@request.auth.papel = 'atendimento' || @request.auth.papel = 'cadastro')",
-        "update": null,
+        "update": "@request.auth.ativo = true && (@request.auth.papel = 'atendimento' || @request.auth.papel = 'cadastro')",
         "delete": null
       },
-      "fields": [],
+      "fields": [
+        {
+          "name": "titulo",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "aberto",
+            "em_analise",
+            "documentacao",
+            "arquivado"
+          ]
+        },
+        {
+          "name": "descricao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "criado_por",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        }
+      ],
       "indexes": []
     },
     {
       "name": "pendencias",
       "type": "base",
       "apiRules": {
-        "list": null,
-        "view": null,
+        "list": "@request.auth.ativo = true && @request.auth.papel != 'administracao' && @request.auth.papel != ''",
+        "view": "@request.auth.ativo = true && @request.auth.papel != 'administracao' && @request.auth.papel != ''",
         "create": "@request.auth.ativo = true && (@request.auth.papel = 'cadastro' || @request.auth.papel = 'operacao_documental')",
-        "update": null,
+        "update": "@request.auth.ativo = true && (@request.auth.papel = 'cadastro' || @request.auth.papel = 'operacao_documental')",
         "delete": null
       },
-      "fields": [],
+      "fields": [
+        {
+          "name": "caso",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "casos"
+        },
+        {
+          "name": "descricao",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "aberta",
+            "resolvida"
+          ]
+        }
+      ],
       "indexes": []
     },
     {
       "name": "rotas_triagem",
       "type": "base",
       "apiRules": {
-        "list": null,
-        "view": null,
+        "list": "@request.auth.ativo = true && (@request.auth.papel = 'triagem_juridica' || @request.auth.papel = 'advogado_responsavel' || @request.auth.papel = 'supervisao')",
+        "view": "@request.auth.ativo = true && (@request.auth.papel = 'triagem_juridica' || @request.auth.papel = 'advogado_responsavel' || @request.auth.papel = 'supervisao')",
         "create": "@request.auth.ativo = true && @request.auth.papel = 'triagem_juridica'",
-        "update": null,
+        "update": "@request.auth.ativo = true && (@request.auth.papel = 'triagem_juridica' || @request.auth.papel = 'supervisao')",
         "delete": null
       },
-      "fields": [],
+      "fields": [
+        {
+          "name": "caso",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "casos"
+        },
+        {
+          "name": "rota",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "triagem_documental",
+            "analise_juridica",
+            "arquivamento"
+          ]
+        },
+        {
+          "name": "observacao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "definido_por",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        }
+      ],
       "indexes": []
     },
     {
       "name": "auditoria",
       "type": "base",
       "apiRules": {
-        "list": null,
-        "view": null,
+        "list": "@request.auth.ativo = true && (@request.auth.papel = 'supervisao' || @request.auth.papel = 'administracao' || @request.auth.papel = 'advogado_responsavel')",
+        "view": "@request.auth.ativo = true && (@request.auth.papel = 'supervisao' || @request.auth.papel = 'administracao' || @request.auth.papel = 'advogado_responsavel')",
         "create": null,
         "update": null,
         "delete": null
       },
-      "fields": [],
+      "fields": [
+        {
+          "name": "ator",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "acao",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "entidade",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "entidade_id",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "estado_anterior",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "estado_novo",
+          "type": "text",
+          "required": false,
+          "system": false
+        }
+      ],
       "indexes": []
     }
   ]
