@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T20:34:44.772Z",
+  "generatedAt": "2026-09-22T20:35:42.408Z",
   "collections": [
     {
       "name": "users",
@@ -7,7 +7,7 @@
       "apiRules": {
         "list": "@request.auth.ativo = true && (@request.auth.papel = 'administracao' || id = @request.auth.id)",
         "view": "@request.auth.ativo = true && (@request.auth.papel = 'administracao' || id = @request.auth.id)",
-        "create": "@request.auth.ativo = true && @request.auth.papel = 'administracao'",
+        "create": "@request.auth.ativo = true",
         "update": "@request.auth.ativo = true && (@request.auth.papel = 'administracao' || id = @request.auth.id)",
         "delete": null
       },
@@ -111,6 +111,25 @@
           "required": false,
           "system": false,
           "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate"
+          ]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -148,6 +167,25 @@
             "aberta",
             "resolvida"
           ]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate"
+          ]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -158,7 +196,7 @@
       "apiRules": {
         "list": "@request.auth.ativo = true && (@request.auth.papel = 'triagem_juridica' || @request.auth.papel = 'advogado_responsavel' || @request.auth.papel = 'supervisao')",
         "view": "@request.auth.ativo = true && (@request.auth.papel = 'triagem_juridica' || @request.auth.papel = 'advogado_responsavel' || @request.auth.papel = 'supervisao')",
-        "create": "@request.auth.ativo = true && @request.auth.papel = 'triagem_juridica'",
+        "create": "@request.auth.ativo = true",
         "update": "@request.auth.ativo = true && (@request.auth.papel = 'triagem_juridica' || @request.auth.papel = 'supervisao')",
         "delete": null
       },
@@ -193,6 +231,25 @@
           "required": false,
           "system": false,
           "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate"
+          ]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -243,6 +300,25 @@
           "type": "text",
           "required": false,
           "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate"
+          ]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
