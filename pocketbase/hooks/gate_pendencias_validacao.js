@@ -1,5 +1,4 @@
-// F1-T01 · RN-002/CA-1-002 — Negação auditada: validar documento (status→resolvida) é da operação documental;
-// cadastro pode editar a pendência, mas não validá-la (cadastro→validação documental negado)
+// F1-T01 · RN-002/CA-1-002 — Negação auditada: validar documento é da operação documental
 onRecordUpdateRequest((e) => {
   const antes = e.record.original()
   const virouResolvida =
@@ -16,7 +15,12 @@ onRecordUpdateRequest((e) => {
       entrada.set('estado_anterior', JSON.stringify({ status: antes.getString('status') }))
       entrada.set('estado_novo', JSON.stringify({ status: e.record.getString('status') }))
       $app.save(entrada)
-    } catch (_) {}
+    } catch (err) {
+      return e.json(500, {
+        status: 500,
+        message: 'Falha ao registrar a negação; ação bloqueada (fail-closed).',
+      })
+    }
     throw new ForbiddenError('Somente a operação documental valida pendências.')
   }
   e.next()

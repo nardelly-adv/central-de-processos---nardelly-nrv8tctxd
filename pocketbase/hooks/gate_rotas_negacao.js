@@ -12,7 +12,12 @@ onRecordCreateRequest((e) => {
       entrada.set('entidade_id', e.record.id)
       entrada.set('estado_novo', JSON.stringify({ motivo: 'criar rota sem papel autorizado' }))
       $app.save(entrada)
-    } catch (_) {}
+    } catch (err) {
+      return e.json(500, {
+        status: 500,
+        message: 'Falha ao registrar a negação; ação bloqueada (fail-closed).',
+      })
+    }
     throw new ForbiddenError('Seu papel não autoriza definir rota de triagem.')
   }
   e.next()

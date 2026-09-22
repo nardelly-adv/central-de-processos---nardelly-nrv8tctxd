@@ -14,7 +14,12 @@ onRecordUpdateRequest((e) => {
         entrada.set('estado_anterior', JSON.stringify({ papel: papelAntes }))
         entrada.set('estado_novo', JSON.stringify({ papel: papelDepois }))
         $app.save(entrada)
-      } catch (_) {}
+      } catch (err) {
+        return e.json(500, {
+          status: 500,
+          message: 'Falha ao registrar a negação; autoelevação bloqueada (fail-closed).',
+        })
+      }
       throw new ForbiddenError('Nenhum usuário pode alterar o próprio papel (RN-005).')
     }
   }

@@ -1,5 +1,4 @@
 // F1-T01 · RN-002/CA-1-002 — Negação auditada: gerenciar usuários é da administração
-// (supervisão→gerenciar usuários negado; cobre criação e alteração de papel/ativo por não-admin)
 onRecordCreateRequest((e) => {
   const papel = e.auth ? e.auth.getString('papel') : ''
   if (!e.auth || papel !== 'administracao') {
@@ -15,7 +14,12 @@ onRecordCreateRequest((e) => {
         JSON.stringify({ motivo: 'criar usuário sem papel de administração' }),
       )
       $app.save(entrada)
-    } catch (_) {}
+    } catch (err) {
+      return e.json(500, {
+        status: 500,
+        message: 'Falha ao registrar a negação; ação bloqueada (fail-closed).',
+      })
+    }
     throw new ForbiddenError('Somente a administração gerencia usuários.')
   }
   e.next()

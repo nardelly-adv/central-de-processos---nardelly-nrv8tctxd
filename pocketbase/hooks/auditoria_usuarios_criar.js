@@ -1,11 +1,14 @@
 // F1-T01 · RN-003 — Auditoria: criação de usuário/papel pela administração
+// O gate_usuarios_negacao é responsável por tentativas fora do papel; não registrar
+// "criar" antes de uma requisição que será negada.
 onRecordCreateRequest((e) => {
+  if (!e.auth || e.auth.getString('papel') !== 'administracao') {
+    e.next()
+    return
+  }
   const trilha = $app.findCollectionByNameOrId('auditoria')
   const entrada = new Record(trilha)
-  entrada.set(
-    'ator',
-    e.auth ? e.auth.getString('email') + ' (' + e.auth.getString('papel') + ')' : 'anonimo',
-  )
+  entrada.set('ator', e.auth.getString('email') + ' (' + e.auth.getString('papel') + ')')
   entrada.set('acao', 'criar')
   entrada.set('entidade', 'users')
   entrada.set('entidade_id', e.record.id)
