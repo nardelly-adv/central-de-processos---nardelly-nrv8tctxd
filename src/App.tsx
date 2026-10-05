@@ -7,6 +7,9 @@ import Index from './pages/Index'
 import NotFound from './pages/NotFound'
 import Login from './pages/Login'
 import AdminUsuarios from './pages/AdminUsuarios'
+import Auditoria from './pages/Auditoria'
+import AcessoNegado from './pages/AcessoNegado'
+import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 
 // ONLY IMPORT AND RENDER WORKING PAGES, NEVER ADD PLACEHOLDER COMPONENTS OR PAGES IN THIS FILE
@@ -19,10 +22,35 @@ const App = () => (
       <Sonner />
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Index />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            }
+          />
           {/* ADD ALL CUSTOM ROUTES MUST BE ADDED HERE */}
           <Route path="/entrar" element={<Login />} />
-          <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+          <Route path="/acesso-negado" element={<AcessoNegado />} />
+          <Route
+            path="/admin/usuarios"
+            element={
+              <ProtectedRoute allowedRoles={['administracao']}>
+                <AdminUsuarios />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/auditoria"
+            element={
+              <ProtectedRoute
+                allowedRoles={['supervisao', 'administracao', 'advogado_responsavel']}
+              >
+                <Auditoria />
+              </ProtectedRoute>
+            }
+          />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
