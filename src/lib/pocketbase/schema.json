@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T20:35:42.408Z",
+  "generatedAt": "2026-10-13T22:24:53.201Z",
   "collections": [
     {
       "name": "users",
@@ -29,14 +29,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         },
         {
           "name": "papel",
@@ -87,7 +92,12 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["aberto", "em_analise", "documentacao", "arquivado"]
+          "selectValues": [
+            "aberto",
+            "em_analise",
+            "documentacao",
+            "arquivado"
+          ]
         },
         {
           "name": "descricao",
@@ -107,14 +117,257 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
+        },
+        {
+          "name": "data_atendimento",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "canal",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "ligacao",
+            "whatsapp",
+            "digisac",
+            "presencial_escritorio",
+            "presencial_sindicato",
+            "presencial_externo",
+            "indireto_parceiro"
+          ]
+        },
+        {
+          "name": "canal_detalhe",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "atendente",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "indicacao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "nome_atendido",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "cpf_atendido",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "atendido_e_titular",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "sim",
+            "nao"
+          ]
+        },
+        {
+          "name": "vinculo_atendido",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "pai_mae",
+            "conjuge",
+            "outro_parentesco",
+            "representante"
+          ]
+        },
+        {
+          "name": "vinculo_outro",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "representante_especificacao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "familia_beneficio",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "loas",
+            "urbano",
+            "rural"
+          ]
+        },
+        {
+          "name": "tipo_beneficio",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "nome_titular",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "cpf_titular",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "nascimento_titular",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "telefone_titular",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "endereco_titular",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "senha_meu_inss",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "filiado",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "nao",
+            "sim"
+          ]
+        },
+        {
+          "name": "sindicato_nome",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "escolaridade",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "profissao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "parente_ja_atendido",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "nao",
+            "sim"
+          ]
+        },
+        {
+          "name": "parente_dados",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "contrato_assinado",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "sim",
+            "nao"
+          ]
+        },
+        {
+          "name": "assinatura_rogo_dados",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "solicitou_documentos",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": [
+            "nao",
+            "sim"
+          ]
+        },
+        {
+          "name": "docs_data_solicitacao",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "docs_prazo_entrega",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "loas_dados",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "urbano_dados",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "rural_dados",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": []
@@ -148,21 +401,29 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["aberta", "resolvida"]
+          "selectValues": [
+            "aberta",
+            "resolvida"
+          ]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -190,7 +451,11 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["triagem_documental", "analise_juridica", "arquivamento"]
+          "selectValues": [
+            "triagem_documental",
+            "analise_juridica",
+            "arquivamento"
+          ]
         },
         {
           "name": "observacao",
@@ -210,14 +475,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -274,14 +544,98 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "pessoas",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.ativo = true && @request.auth.papel != 'administracao' && @request.auth.papel != ''",
+        "view": "@request.auth.ativo = true && @request.auth.papel != 'administracao' && @request.auth.papel != ''",
+        "create": "@request.auth.ativo = true && (@request.auth.papel = 'atendimento' || @request.auth.papel = 'cadastro')",
+        "update": "@request.auth.ativo = true && (@request.auth.papel = 'atendimento' || @request.auth.papel = 'cadastro')",
+        "delete": null
+      },
+      "fields": [
+        {
+          "name": "caso",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "casos"
+        },
+        {
+          "name": "nome",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "cpf",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "vinculo",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "atendido",
+            "titular",
+            "representante",
+            "grupo_familiar",
+            "dependente",
+            "assinante_rogo",
+            "parente_cliente"
+          ]
+        },
+        {
+          "name": "especificacao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "telefone",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate"
+          ]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []

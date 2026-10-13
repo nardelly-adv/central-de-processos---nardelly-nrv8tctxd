@@ -9,6 +9,8 @@ import Login from './pages/Login'
 import AdminUsuarios from './pages/AdminUsuarios'
 import Auditoria from './pages/Auditoria'
 import AcessoNegado from './pages/AcessoNegado'
+import NovaFicha from './pages/NovaFicha'
+import CasoDetalhe from './pages/CasoDetalhe'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 
@@ -38,6 +40,31 @@ const App = () => (
             element={
               <ProtectedRoute allowedRoles={['administracao']}>
                 <AdminUsuarios />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/intake/nova"
+            element={
+              <ProtectedRoute allowedRoles={['atendimento', 'cadastro']}>
+                <NovaFicha />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/caso/:id"
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  'atendimento',
+                  'cadastro',
+                  'operacao_documental',
+                  'triagem_juridica',
+                  'advogado_responsavel',
+                  'supervisao',
+                ]}
+              >
+                <CasoDetalhe />
               </ProtectedRoute>
             }
           />

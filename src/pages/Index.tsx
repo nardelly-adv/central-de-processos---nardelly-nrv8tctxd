@@ -84,6 +84,9 @@ const PainelPapel = () => {
     ...(['supervisao', 'administracao', 'advogado_responsavel'].includes(papel)
       ? [{ to: '/auditoria', label: 'Trilha de auditoria' }]
       : []),
+    ...(['atendimento', 'cadastro'].includes(papel)
+      ? [{ to: '/intake/nova', label: 'Nova ficha de intake' }]
+      : []),
   ]
 
   const sair = () => {
