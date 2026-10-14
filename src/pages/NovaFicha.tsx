@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 
 const CANAIS = [
@@ -287,19 +294,21 @@ const NovaFicha = () => {
                 <Label htmlFor="familia_beneficio">
                   Família do benefício (LOAS, urbano ou rural)
                 </Label>
-                <select
-                  id="familia_beneficio"
-                  className={selectClass}
+                <Select
                   value={ficha.familia_beneficio}
-                  onChange={(e) => set('familia_beneficio', e.target.value)}
+                  onValueChange={(valor) => set('familia_beneficio', valor)}
                 >
-                  <option value="">Selecione…</option>
-                  {FAMILIAS.map(([v, l]) => (
-                    <option key={v} value={v}>
-                      {l}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger id="familia_beneficio" className={selectClass}>
+                    <SelectValue placeholder="Selecione…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FAMILIAS.map(([v, l]) => (
+                      <SelectItem key={v} value={v}>
+                        {l}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="tipo_beneficio">
