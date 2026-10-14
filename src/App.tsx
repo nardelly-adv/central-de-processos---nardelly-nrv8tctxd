@@ -3,7 +3,13 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import Index from './pages/Index'
+import Dashboard from './pages/Dashboard'
+import Clientes from './pages/Clientes'
+import ClienteDetalhe from './pages/ClienteDetalhe'
+import Processos from './pages/Processos'
+import ProcessoDetalhe from './pages/ProcessoDetalhe'
+import Documentos from './pages/Documentos'
+import Agenda from './pages/Agenda'
 import NotFound from './pages/NotFound'
 import Login from './pages/Login'
 import AdminUsuarios from './pages/AdminUsuarios'
@@ -28,11 +34,58 @@ const App = () => (
             path="/"
             element={
               <ProtectedRoute>
-                <Index />
+                <Dashboard />
               </ProtectedRoute>
             }
           />
-          {/* ADD ALL CUSTOM ROUTES MUST BE ADDED HERE */}
+          <Route
+            path="/clientes"
+            element={
+              <ProtectedRoute>
+                <Clientes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clientes/:id"
+            element={
+              <ProtectedRoute>
+                <ClienteDetalhe />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/processos"
+            element={
+              <ProtectedRoute>
+                <Processos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/processos/:id"
+            element={
+              <ProtectedRoute>
+                <ProcessoDetalhe />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/documentos"
+            element={
+              <ProtectedRoute>
+                <Documentos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/agenda"
+            element={
+              <ProtectedRoute>
+                <Agenda />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/entrar" element={<Login />} />
           <Route path="/acesso-negado" element={<AcessoNegado />} />
           <Route

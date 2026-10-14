@@ -98,7 +98,9 @@ const NovaFicha = () => {
       let alerta: string | undefined
       if (ficha.familia_beneficio === 'rural') {
         try {
-          await pb.send(`/backend/v1/casos/${resultado.id}/instanciar-checklist`, { method: 'POST' })
+          await pb.send(`/backend/v1/casos/${resultado.id}/instanciar-checklist`, {
+            method: 'POST',
+          })
         } catch (erroChecklist: any) {
           alerta = `A ficha foi registrada, mas o checklist demonstrativo não foi vinculado: ${erroChecklist?.response?.message || 'tipo rural sem correspondência'}. Nenhuma ficha foi perdida.`
         }

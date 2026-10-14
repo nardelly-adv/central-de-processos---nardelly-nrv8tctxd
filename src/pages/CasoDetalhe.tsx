@@ -58,7 +58,9 @@ const CasoDetalhe = () => {
   const [checklist, setChecklist] = useState<any>(null)
   const [checklistItems, setChecklistItems] = useState<any[]>([])
   const [pendencias, setPendencias] = useState<any[]>([])
-  const [erro, setErro] = useState(typeof location.state?.alert === 'string' ? location.state.alert : '')
+  const [erro, setErro] = useState(
+    typeof location.state?.alert === 'string' ? location.state.alert : '',
+  )
   const [carregando, setCarregando] = useState(true)
   const [acao, setAcao] = useState<Record<string, Record<string, string>>>({})
   const [justificativa, setJustificativa] = useState('')
@@ -120,7 +122,10 @@ const CasoDetalhe = () => {
       await pb.send(`/backend/v1/casos/${id}/instanciar-checklist`, { method: 'POST' })
       await carregar()
     } catch (e: any) {
-      setErro(e?.response?.message || 'Não foi possível vincular o checklist; nenhum item foi confirmado.')
+      setErro(
+        e?.response?.message ||
+          'Não foi possível vincular o checklist; nenhum item foi confirmado.',
+      )
     }
   }
 
@@ -140,35 +145,44 @@ const CasoDetalhe = () => {
         setErro('A devolução exige orientação previamente aprovada pelo advogado responsável.')
         return
       }
-    }    try {
+    }
+    try {
       await pb.send(`/backend/v1/pendencias/${p.id}/transicionar`, {
         method: 'POST',
         body: JSON.stringify({
           estado: dados.estado_documental,
           motivo_devolucao: dados.motivo_devolucao || '',
-
         }),
       })
       setAcao((a) => ({ ...a, [p.id]: {} }))
       await carregar()
     } catch (e: any) {
-      setErro(e?.response?.message || 'A transição foi recusada; confira o estado atual antes de repetir.')
+      setErro(
+        e?.response?.message ||
+          'A transição foi recusada; confira o estado atual antes de repetir.',
+      )
       await carregar()
     }
   }
 
   const aprovarOrientacao = async (p: any) => {
     const orientacao = (acao[p.id]?.orientacao_aprovada || '').trim()
-    if (!orientacao) { setErro('Escreva a orientação de reenvio a aprovar.'); return }
+    if (!orientacao) {
+      setErro('Escreva a orientação de reenvio a aprovar.')
+      return
+    }
     setErro('')
     try {
       await pb.send(`/backend/v1/pendencias/${p.id}/aprovar-orientacao`, {
-        method: 'POST', body: JSON.stringify({ orientacao }),
+        method: 'POST',
+        body: JSON.stringify({ orientacao }),
       })
       setAcao((a) => ({ ...a, [p.id]: {} }))
       await carregar()
     } catch (e: any) {
-      setErro(e?.response?.message || 'A orientação não foi aprovada; nenhuma alteração foi confirmada.')
+      setErro(
+        e?.response?.message || 'A orientação não foi aprovada; nenhuma alteração foi confirmada.',
+      )
     }
   }
 
@@ -194,7 +208,9 @@ const CasoDetalhe = () => {
       setAcao((a) => ({ ...a, [p.id]: {} }))
       await carregar()
     } catch (e: any) {
-      setErro(e?.response?.message || 'Protocolo recusado; confira o estado antes de tentar novamente.')
+      setErro(
+        e?.response?.message || 'Protocolo recusado; confira o estado antes de tentar novamente.',
+      )
       await carregar()
     }
   }
@@ -220,21 +236,35 @@ const CasoDetalhe = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold">{caso?.titulo || 'Caso'}</h1>
-            <p className="text-sm text-muted-foreground">Ficha de atendimento, documentos e histórico do caso</p>
+            <p className="text-sm text-muted-foreground">
+              Ficha de atendimento, documentos e histórico do caso
+            </p>
           </div>
-          <Button asChild variant="outline"><Link to="/">Voltar ao painel</Link></Button>
+          <Button asChild variant="outline">
+            <Link to="/">Voltar ao painel</Link>
+          </Button>
         </div>
-        {erro && <p role="alert" aria-live="assertive" className="text-sm text-red-700">{erro}</p>}
+        {erro && (
+          <p role="alert" aria-live="assertive" className="text-sm text-red-700">
+            {erro}
+          </p>
+        )}
         {carregando && <p role="status">Carregando caso…</p>}
 
         {caso && (
           <Card>
-            <CardHeader><CardTitle className="text-base">Dados da ficha</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-base">Dados da ficha</CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-                {Object.entries(caso).filter(([campo, valor]) => LABELS[campo] && valor !== null && valor !== '').map(([campo, valor]) => (
-                  <p key={campo} className="text-sm"><b>{LABELS[campo]}:</b> {String(valor)}</p>
-                ))}
+                {Object.entries(caso)
+                  .filter(([campo, valor]) => LABELS[campo] && valor !== null && valor !== '')
+                  .map(([campo, valor]) => (
+                    <p key={campo} className="text-sm">
+                      <b>{LABELS[campo]}:</b> {String(valor)}
+                    </p>
+                  ))}
               </div>
             </CardContent>
           </Card>
@@ -242,30 +272,76 @@ const CasoDetalhe = () => {
 
         {caso && (
           <Card>
-            <CardHeader><CardTitle className="text-base">Checklist documental</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-base">Checklist documental</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-3">
               {checklist ? (
                 <div className="space-y-2 text-sm">
-                  <p>Versão {checklist.versao} · {checklist.status_aprovacao === 'aprovado' ? 'Aprovada pelo jurídico' : 'PENDENTE DE APROVAÇÃO JURÍDICA'}</p>
-                  {checklist.status_aprovacao !== 'aprovado' && <p className="text-amber-800">Itens meramente demonstrativos e opcionais; não representam obrigação jurídica.</p>}
-                  {checklistItems.length > 0 && <ul className="list-disc space-y-1 pl-5">{checklistItems.map((item) => <li key={item.chave}>{item.nome} — {checklist.status_aprovacao === 'aprovado' && item.obrigatoria ? 'obrigatório aprovado' : 'opcional'}</li>)}</ul>}
+                  <p>
+                    Versão {checklist.versao} ·{' '}
+                    {checklist.status_aprovacao === 'aprovado'
+                      ? 'Aprovada pelo jurídico'
+                      : 'PENDENTE DE APROVAÇÃO JURÍDICA'}
+                  </p>
+                  {checklist.status_aprovacao !== 'aprovado' && (
+                    <p className="text-amber-800">
+                      Itens meramente demonstrativos e opcionais; não representam obrigação
+                      jurídica.
+                    </p>
+                  )}
+                  {checklistItems.length > 0 && (
+                    <ul className="list-disc space-y-1 pl-5">
+                      {checklistItems.map((item) => (
+                        <li key={item.chave}>
+                          {item.nome} —{' '}
+                          {checklist.status_aprovacao === 'aprovado' && item.obrigatoria
+                            ? 'obrigatório aprovado'
+                            : 'opcional'}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ) : (
-                <p className="text-sm">Nenhum checklist vinculado. Se o tipo rural estiver no recorte demonstrativo, a equipe pode instanciar o plano sintético opcional.</p>
+                <p className="text-sm">
+                  Nenhum checklist vinculado. Se o tipo rural estiver no recorte demonstrativo, a
+                  equipe pode instanciar o plano sintético opcional.
+                </p>
               )}
-              {['atendimento', 'cadastro'].includes(papel) && caso.familia_beneficio === 'rural' && !checklist && (
-                <Button variant="outline" disabled={carregando} onClick={() => void instanciarChecklist()}>Instanciar plano sintético opcional</Button>
-              )}
+              {['atendimento', 'cadastro'].includes(papel) &&
+                caso.familia_beneficio === 'rural' &&
+                !checklist && (
+                  <Button
+                    variant="outline"
+                    disabled={carregando}
+                    onClick={() => void instanciarChecklist()}
+                  >
+                    Instanciar plano sintético opcional
+                  </Button>
+                )}
             </CardContent>
           </Card>
         )}
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Pendências documentais ({pendencias.length})</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">
+              Pendências documentais ({pendencias.length})
+            </CardTitle>
+          </CardHeader>
           <CardContent className="space-y-5">
-            {pendencias.length === 0 ? <p>Nenhuma pendência registrada.</p> : (
+            {pendencias.length === 0 ? (
+              <p>Nenhuma pendência registrada.</p>
+            ) : (
               <Table>
-                <TableHeader><TableRow><TableHead>Documento</TableHead><TableHead>Estado</TableHead><TableHead>Operação</TableHead></TableRow></TableHeader>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Documento</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Operação</TableHead>
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
                   {pendencias.map((p) => {
                     const opcoes = TRANSICOES[p.estado_documental] || []
@@ -273,37 +349,120 @@ const CasoDetalhe = () => {
                       <TableRow key={p.id}>
                         <TableCell className="align-top">
                           <p>{p.descricao}</p>
-                          <p className="text-xs text-muted-foreground">{p.obrigatoria ? 'Obrigatória · checklist aprovado' : 'Exemplo opcional / não obrigatório'}{p.item_chave ? ` · ${p.item_chave}` : ''}</p>
-                          {p.motivo_devolucao && <p className="text-xs">Motivo: {p.motivo_devolucao}</p>}
-                          {p.orientacao && <p className="text-xs">Orientação aprovada: {p.orientacao}</p>}                        </TableCell>
-                        <TableCell className="align-top">{ESTADOS[p.estado_documental] || p.estado_documental || p.status}</TableCell>
+                          <p className="text-xs text-muted-foreground">
+                            {p.obrigatoria
+                              ? 'Obrigatória · checklist aprovado'
+                              : 'Exemplo opcional / não obrigatório'}
+                            {p.item_chave ? ` · ${p.item_chave}` : ''}
+                          </p>
+                          {p.motivo_devolucao && (
+                            <p className="text-xs">Motivo: {p.motivo_devolucao}</p>
+                          )}
+                          {p.orientacao && (
+                            <p className="text-xs">Orientação aprovada: {p.orientacao}</p>
+                          )}{' '}
+                        </TableCell>
+                        <TableCell className="align-top">
+                          {ESTADOS[p.estado_documental] || p.estado_documental || p.status}
+                        </TableCell>
                         <TableCell>
                           <div className="min-w-[260px] space-y-2">
-                            {papel === 'advogado_responsavel' && ['recebida', 'em_conferencia'].includes(p.estado_documental) && (
-                              <>
-                                <p className="text-xs">{p.orientacao_aprovada_por ? `Orientação aprovada: ${p.orientacao}` : 'A devolução exige orientação aprovada pelo advogado responsável.'}</p>
-                                {!p.orientacao_aprovada_por && <><Textarea aria-label="Orientação para aprovação" placeholder="Escreva a orientação de reenvio" value={acao[p.id]?.orientacao_aprovada || ''} onChange={(ev) => setCampo(p.id, 'orientacao_aprovada', ev.target.value)} /><Button size="sm" variant="outline" onClick={() => void aprovarOrientacao(p)}>Aprovar orientação de devolução</Button></>}
-                              </>
-                            )}
+                            {papel === 'advogado_responsavel' &&
+                              ['recebida', 'em_conferencia'].includes(p.estado_documental) && (
+                                <>
+                                  <p className="text-xs">
+                                    {p.orientacao_aprovada_por
+                                      ? `Orientação aprovada: ${p.orientacao}`
+                                      : 'A devolução exige orientação aprovada pelo advogado responsável.'}
+                                  </p>
+                                  {!p.orientacao_aprovada_por && (
+                                    <>
+                                      <Textarea
+                                        aria-label="Orientação para aprovação"
+                                        placeholder="Escreva a orientação de reenvio"
+                                        value={acao[p.id]?.orientacao_aprovada || ''}
+                                        onChange={(ev) =>
+                                          setCampo(p.id, 'orientacao_aprovada', ev.target.value)
+                                        }
+                                      />
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => void aprovarOrientacao(p)}
+                                      >
+                                        Aprovar orientação de devolução
+                                      </Button>
+                                    </>
+                                  )}
+                                </>
+                              )}
                             {papel === 'operacao_documental' && opcoes.length > 0 && (
                               <>
                                 <Label htmlFor={`estado-${p.id}`}>Próximo estado</Label>
-                                <select id={`estado-${p.id}`} className="flex h-10 w-full rounded-md border bg-background px-3 text-sm" value={acao[p.id]?.estado_documental || ''} onChange={(ev) => setCampo(p.id, 'estado_documental', ev.target.value)}>
+                                <select
+                                  id={`estado-${p.id}`}
+                                  className="flex h-10 w-full rounded-md border bg-background px-3 text-sm"
+                                  value={acao[p.id]?.estado_documental || ''}
+                                  onChange={(ev) =>
+                                    setCampo(p.id, 'estado_documental', ev.target.value)
+                                  }
+                                >
                                   <option value="">Selecione…</option>
-                                  {opcoes.filter((estado) => estado !== 'devolvida' || !!p.orientacao_aprovada_por).map((estado) => <option key={estado} value={estado}>{ESTADOS[estado]}</option>)}
+                                  {opcoes
+                                    .filter(
+                                      (estado) =>
+                                        estado !== 'devolvida' || !!p.orientacao_aprovada_por,
+                                    )
+                                    .map((estado) => (
+                                      <option key={estado} value={estado}>
+                                        {ESTADOS[estado]}
+                                      </option>
+                                    ))}
                                 </select>
-                                {acao[p.id]?.estado_documental === 'devolvida' && <Input aria-label="Motivo da devolução" placeholder="Motivo da devolução" value={acao[p.id]?.motivo_devolucao || ''} onChange={(ev) => setCampo(p.id, 'motivo_devolucao', ev.target.value)} />}
-                                <Button size="sm" onClick={() => void transicionar(p)}>Salvar transição</Button>
+                                {acao[p.id]?.estado_documental === 'devolvida' && (
+                                  <Input
+                                    aria-label="Motivo da devolução"
+                                    placeholder="Motivo da devolução"
+                                    value={acao[p.id]?.motivo_devolucao || ''}
+                                    onChange={(ev) =>
+                                      setCampo(p.id, 'motivo_devolucao', ev.target.value)
+                                    }
+                                  />
+                                )}
+                                <Button size="sm" onClick={() => void transicionar(p)}>
+                                  Salvar transição
+                                </Button>
                               </>
                             )}
-                            {papel === 'operacao_documental' && p.estado_documental === 'solicitada' && (
-                              <>
-                                <Input aria-label="Número do protocolo" placeholder="Nº protocolo" value={acao[p.id]?.numero || ''} onChange={(ev) => setCampo(p.id, 'numero', ev.target.value)} />
-                                <Input aria-label="Ciência do responsável" placeholder="Ciência do responsável" value={acao[p.id]?.ciencia || ''} onChange={(ev) => setCampo(p.id, 'ciencia', ev.target.value)} />
-                                <Button size="sm" variant="outline" onClick={() => void protocolar(p)}>Registrar recebimento e protocolo</Button>
-                              </>
+                            {papel === 'operacao_documental' &&
+                              p.estado_documental === 'solicitada' && (
+                                <>
+                                  <Input
+                                    aria-label="Número do protocolo"
+                                    placeholder="Nº protocolo"
+                                    value={acao[p.id]?.numero || ''}
+                                    onChange={(ev) => setCampo(p.id, 'numero', ev.target.value)}
+                                  />
+                                  <Input
+                                    aria-label="Ciência do responsável"
+                                    placeholder="Ciência do responsável"
+                                    value={acao[p.id]?.ciencia || ''}
+                                    onChange={(ev) => setCampo(p.id, 'ciencia', ev.target.value)}
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => void protocolar(p)}
+                                  >
+                                    Registrar recebimento e protocolo
+                                  </Button>
+                                </>
+                              )}
+                            {!['operacao_documental'].includes(papel) && (
+                              <p className="text-xs text-muted-foreground">
+                                Somente operação documental pode movimentar este item.
+                              </p>
                             )}
-                            {!['operacao_documental'].includes(papel) && <p className="text-xs text-muted-foreground">Somente operação documental pode movimentar este item.</p>}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -316,11 +475,26 @@ const CasoDetalhe = () => {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Situação e encaminhamento para triagem</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">Situação e encaminhamento para triagem</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">O sistema bloqueia o encaminhamento se faltar requisito de checklist aprovado. Exceção exige advogado responsável, justificativa e trilha auditada. Itens do plano B pendentes não contam como obrigatórios.</p>
-            {papel === 'advogado_responsavel' && pendenciasObrigatoriasAbertas.length > 0 && <Textarea aria-label="Justificativa da exceção documental" placeholder="Justificativa da exceção documental" value={justificativa} onChange={(ev) => setJustificativa(ev.target.value)} />}
-            {papel === 'advogado_responsavel' && <Button onClick={() => void encaminhar()}>Marcar como pronto para triagem</Button>}
+            <p className="text-sm text-muted-foreground">
+              O sistema bloqueia o encaminhamento se faltar requisito de checklist aprovado. Exceção
+              exige advogado responsável, justificativa e trilha auditada. Itens do plano B
+              pendentes não contam como obrigatórios.
+            </p>
+            {papel === 'advogado_responsavel' && pendenciasObrigatoriasAbertas.length > 0 && (
+              <Textarea
+                aria-label="Justificativa da exceção documental"
+                placeholder="Justificativa da exceção documental"
+                value={justificativa}
+                onChange={(ev) => setJustificativa(ev.target.value)}
+              />
+            )}
+            {papel === 'advogado_responsavel' && (
+              <Button onClick={() => void encaminhar()}>Marcar como pronto para triagem</Button>
+            )}
           </CardContent>
         </Card>
       </div>

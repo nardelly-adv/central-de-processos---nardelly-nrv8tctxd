@@ -1,6 +1,9 @@
 // F1-T01 · RN-003 — Auditoria: criação de pendência documental
 onRecordCreateRequest((e) => {
-  if (e.record.getString('checklist_id') || e.record.getString('tipo') === 'documental') { e.next(); return }
+  if (e.record.getString('checklist_id') || e.record.getString('tipo') === 'documental') {
+    e.next()
+    return
+  }
   const trilha = $app.findCollectionByNameOrId('auditoria')
   const entrada = new Record(trilha)
   entrada.set(
