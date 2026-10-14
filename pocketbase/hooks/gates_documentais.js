@@ -1,14 +1,14 @@
 // F1-T03 · RN-104/RN-105 — transições documentais e bloqueio de avanço.
-const estados = ['solicitada', 'recebida', 'em_conferencia', 'validada', 'devolvida', 'pendente']
-const permitidas = {
-  solicitada: ['recebida', 'pendente'],
-  recebida: ['em_conferencia', 'devolvida', 'pendente'],
-  em_conferencia: ['validada', 'devolvida', 'pendente'],
-  devolvida: ['solicitada', 'recebida'],
-  pendente: ['solicitada', 'recebida'],
-  validada: [],
-}
 onRecordUpdateRequest((e) => {
+  const estados = ['solicitada', 'recebida', 'em_conferencia', 'validada', 'devolvida', 'pendente']
+  const permitidas = {
+    solicitada: ['recebida', 'pendente'],
+    recebida: ['em_conferencia', 'devolvida', 'pendente'],
+    em_conferencia: ['validada', 'devolvida', 'pendente'],
+    devolvida: ['solicitada', 'recebida'],
+    pendente: ['solicitada', 'recebida'],
+    validada: [],
+  }
   const antes = e.record.original()
   const anterior = antes.getString('estado_documental') || 'solicitada'
   const novo = e.record.getString('estado_documental') || anterior

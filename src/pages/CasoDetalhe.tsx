@@ -80,16 +80,14 @@ const CasoDetalhe = () => {
       return
     }
     try {
-      await pb
-        .collection('protocolos')
-        .create({
-          caso: id,
-          pendencia: p.id,
-          numero: dados.numero,
-          recebido_em: new Date().toISOString(),
-          recebido_por: pb.authStore.record?.id,
-          ciencia_responsavel: dados.ciencia || '',
-        })
+      await pb.collection('protocolos').create({
+        caso: id,
+        pendencia: p.id,
+        numero: dados.numero,
+        recebido_em: new Date().toISOString(),
+        recebido_por: pb.authStore.record?.id,
+        ciencia_responsavel: dados.ciencia || '',
+      })
       await atualizarPendencia({ ...p, estado_documental: 'recebida' })
     } catch (e: any) {
       setErro(e?.response?.message || 'Não foi possível criar o protocolo.')
