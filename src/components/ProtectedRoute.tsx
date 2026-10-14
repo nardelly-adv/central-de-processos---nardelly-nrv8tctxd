@@ -16,22 +16,26 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const [verifiedRole, setVerifiedRole] = useState('')
   const activeRef = useRef(true)
   const checkingRef = useRef(false)
+  const lastAllowedKeyRef = useRef<string | null>(null)
   const allowedKey = allowedRoles?.join('|') || ''
 
   const validateSession = useCallback(async () => {
     if (checkingRef.current) return
     checkingRef.current = true
-    setStatus('checking')
+
+    // Keep the protected screen mounted during focus revalidation so an open form
+    // retains its in-memory values. Initial loads and permission changes still gate.
+    if (lastAllowedKeyRef.current !== allowedKey) setStatus('checking')
 
     if (!pb.authStore.isValid || !pb.authStore.record) {
       pb.authStore.clear()
-      setStatus('anonymous')
+      if (activeRef.current) setStatus('anonymous')
       checkingRef.current = false
       return
     }
 
     try {
-      // Revalida no servidor ao carregar a rota e quando a aba volta ao foco.
+      // Revalidate on initial route load and whenever the tab returns to focus.
       const result = await pb.collection('users').authRefresh()
       const user = result.record as Record<string, unknown> | undefined
       if (!user || user.ativo !== true) throw new Error('Sessão inativa ou revogada.')
@@ -39,6 +43,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
       const role = String(user.papel || '')
       if (!activeRef.current) return
       setVerifiedRole(role)
+      lastAllowedKeyRef.current = allowedKey
       setStatus(allowedKey && !allowedKey.split('|').includes(role) ? 'forbidden' : 'authenticated')
     } catch {
       pb.authStore.clear()

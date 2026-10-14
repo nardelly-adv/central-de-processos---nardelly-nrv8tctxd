@@ -195,7 +195,7 @@ const NovaFicha = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="nome_atendido">Nome da pessoa atendida</Label>
+                <Label htmlFor="nome_atendido">Nome da pessoa que está sendo atendida</Label>
                 <Input
                   id="nome_atendido"
                   value={ficha.nome_atendido}
@@ -211,7 +211,9 @@ const NovaFicha = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="atendido_e_titular">É o titular/autor do processo?</Label>
+                <Label htmlFor="atendido_e_titular">
+                  O segurado/cliente atendido é o titular/autor do processo?
+                </Label>
                 <select
                   id="atendido_e_titular"
                   className={selectClass}
@@ -295,7 +297,7 @@ const NovaFicha = () => {
                   id="tipo_beneficio"
                   value={ficha.tipo_beneficio}
                   onChange={(e) => set('tipo_beneficio', e.target.value)}
-                  placeholder="Ex.: LOAS idoso, aposentadoria, pensão por morte rural"
+                  placeholder="Especifique o tipo de benefício (ex.: aposentadoria por idade rural)"
                 />
               </div>
               <div className="space-y-2">
@@ -345,7 +347,7 @@ const NovaFicha = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Informações do titular</CardTitle>
+              <CardTitle className="text-base">Dados complementares do titular</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -383,16 +385,16 @@ const NovaFicha = () => {
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="escolaridade">Escolaridade</Label>
+                <Label htmlFor="escolaridade">Estudou até qual série?</Label>
                 <Input
                   id="escolaridade"
                   value={ficha.escolaridade}
                   onChange={(e) => set('escolaridade', e.target.value)}
-                  placeholder="Ex.: fundamental incompleto; analphabeto; só assina o nome"
+                  placeholder="Informe a série ou etapa; marque se é analfabeto ou só sabe assinar o nome."
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="profissao">Profissão atual</Label>
+                <Label htmlFor="profissao">Profissão (com o que trabalha atualmente?)</Label>
                 <Input
                   id="profissao"
                   value={ficha.profissao}
@@ -400,7 +402,9 @@ const NovaFicha = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="parente_ja_atendido">Algum parente já atendeu no escritório?</Label>
+                <Label htmlFor="parente_ja_atendido">
+                  Algum parente do cliente já mexeu com processo no escritório?
+                </Label>
                 <select
                   id="parente_ja_atendido"
                   className={selectClass}
@@ -434,8 +438,8 @@ const NovaFicha = () => {
               {ficha.familia_beneficio === 'loas' && (
                 <div className="space-y-2">
                   <Label htmlFor="loas_dados">
-                    Dados LOAS: idoso (idade) ou deficiência; renda; CadÚnico; moradia; grupo
-                    familiar (sem limite); gastos
+                    LOAS — idoso (idade) ou pessoa com deficiência; renda; CadÚnico; moradia; grupo
+                    familiar (sem limite fixo); gastos
                   </Label>
                   <Textarea
                     id="loas_dados"
@@ -448,9 +452,10 @@ const NovaFicha = () => {
               {ficha.familia_beneficio === 'urbano' && (
                 <div className="space-y-2">
                   <Label htmlFor="urbano_dados">
-                    Dados urbanos: idade 65/62; benefícios anteriores; negativas; judicial;
-                    carteira/carnês; estado civil; incapacidade; salário-maternidade;
-                    pensão/reclusão
+                    Benefícios urbanos — aposentadoria, salário-maternidade ou incapacidade; idade;
+                    benefícios anteriores; pedidos negados; ações judiciais; carteira/carnês;
+                    atividade rural e urbana; estado civil; perguntas condicionais de incapacidade,
+                    salário-maternidade, pensão por morte e auxílio-reclusão
                   </Label>
                   <Textarea
                     id="urbano_dados"
@@ -463,8 +468,11 @@ const NovaFicha = () => {
               {ficha.familia_beneficio === 'rural' && (
                 <div className="space-y-2">
                   <Label htmlFor="rural_dados">
-                    Dados rurais: terras onde trabalhou; companheiros; filhos; pais;
-                    salário-maternidade rural; incapacidade; pensão/reclusão
+                    Benefícios rurais — qual benefício; terras onde trabalhou (nome, titularidade,
+                    período e com quem trabalhou); períodos de união e companheiros; filhos; pais;
+                    benefícios anteriores, negativas, ações judiciais e vínculos urbanos/rurais. As
+                    provas documentais rurais são exemplificativas e estão pendentes de aprovação
+                    jurídica.
                   </Label>
                   <Textarea
                     id="rural_dados"
@@ -489,7 +497,7 @@ const NovaFicha = () => {
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="solicitou_documentos">
-                  Solicitou documentos durante o atendimento?
+                  Durante o atendimento, solicitou documentos ao cliente?
                 </Label>
                 <select
                   id="solicitou_documentos"
@@ -504,7 +512,9 @@ const NovaFicha = () => {
               {ficha.solicitou_documentos === 'sim' && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="docs_data_solicitacao">Data da solicitação</Label>
+                    <Label htmlFor="docs_data_solicitacao">
+                      Data da solicitação dos documentos
+                    </Label>
                     <Input
                       id="docs_data_solicitacao"
                       type="date"
@@ -513,7 +523,7 @@ const NovaFicha = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="docs_prazo_entrega">Prazo para entrega</Label>
+                    <Label htmlFor="docs_prazo_entrega">Prazo para entrega dos documentos</Label>
                     <Input
                       id="docs_prazo_entrega"
                       type="date"
@@ -524,7 +534,7 @@ const NovaFicha = () => {
                 </>
               )}
               <div className="space-y-2">
-                <Label htmlFor="contrato_assinado">Cliente assinou contrato?</Label>
+                <Label htmlFor="contrato_assinado">O cliente assina/assinou o contrato?</Label>
                 <select
                   id="contrato_assinado"
                   className={selectClass}
