@@ -338,9 +338,9 @@ export default function AdminAdvbox() {
             <div className="flex items-start gap-3 rounded-md border bg-white p-3 text-sm">
               <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />
               <p>
-                Cadastre <code>ADVBOX_API_TOKEN</code> em Skip Cloud → Secrets. Não cole o token
-                nesta tela, no chat nem em variáveis <code>VITE_*</code>; o serviço só verifica se o
-                segredo existe.
+                O backend usa o segredo <code>API_ADVBOX</code> já cadastrado em Skip Cloud →
+                Secrets. Não cole o token nesta tela, no chat nem em variáveis <code>VITE_*</code>;
+                o serviço só verifica se o segredo existe.
               </p>
             </div>
             <a

@@ -25,10 +25,12 @@ routerAdd(
       throw new ForbiddenError('A integração ADVBOX está restrita à administração.')
     }
 
-    const token = $secrets.get('ADVBOX_API_TOKEN') || ''
+    const preferredToken = $secrets.get('API_ADVBOX') || ''
+    const fallbackToken = $secrets.get('ADVBOX_API_TOKEN') || ''
+    const preferredConfigured = String(preferredToken).trim().length > 0
     return e.json(200, {
-      configured: String(token).trim().length > 0,
-      secretName: 'ADVBOX_API_TOKEN',
+      configured: preferredConfigured || String(fallbackToken).trim().length > 0,
+      secretName: preferredConfigured ? 'API_ADVBOX' : 'ADVBOX_API_TOKEN',
       baseUrl: 'https://app.advbox.com.br/api/v1',
     })
   },

@@ -262,10 +262,12 @@ routerAdd(
     }
     if (!definition.body && hasBody) throw new BadRequestError('Esta operação não aceita body.')
 
-    const token = $secrets.get('ADVBOX_API_TOKEN') || ''
+    const preferredToken = $secrets.get('API_ADVBOX') || ''
+    const fallbackToken = $secrets.get('ADVBOX_API_TOKEN') || ''
+    const token = String(preferredToken).trim() ? preferredToken : fallbackToken
     if (!String(token).trim()) {
       return e.json(503, {
-        error: 'O segredo ADVBOX_API_TOKEN ainda não foi configurado no Skip Cloud.',
+        error: 'Configure o segredo API_ADVBOX no Skip Cloud para habilitar a integração.',
       })
     }
 

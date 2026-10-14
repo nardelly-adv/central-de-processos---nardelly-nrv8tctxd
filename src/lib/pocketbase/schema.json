@@ -29,19 +29,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         },
         {
           "name": "papel",
@@ -92,12 +87,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "aberto",
-            "em_analise",
-            "documentacao",
-            "arquivado"
-          ]
+          "selectValues": ["aberto", "em_analise", "documentacao", "arquivado"]
         },
         {
           "name": "descricao",
@@ -117,19 +107,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         },
         {
           "name": "data_atendimento",
@@ -187,22 +172,14 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "sim",
-            "nao"
-          ]
+          "selectValues": ["sim", "nao"]
         },
         {
           "name": "vinculo_atendido",
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "pai_mae",
-            "conjuge",
-            "outro_parentesco",
-            "representante"
-          ]
+          "selectValues": ["pai_mae", "conjuge", "outro_parentesco", "representante"]
         },
         {
           "name": "vinculo_outro",
@@ -221,11 +198,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "loas",
-            "urbano",
-            "rural"
-          ]
+          "selectValues": ["loas", "urbano", "rural"]
         },
         {
           "name": "tipo_beneficio",
@@ -274,10 +247,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "nao",
-            "sim"
-          ]
+          "selectValues": ["nao", "sim"]
         },
         {
           "name": "sindicato_nome",
@@ -302,10 +272,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "nao",
-            "sim"
-          ]
+          "selectValues": ["nao", "sim"]
         },
         {
           "name": "parente_dados",
@@ -318,10 +285,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "sim",
-            "nao"
-          ]
+          "selectValues": ["sim", "nao"]
         },
         {
           "name": "assinatura_rogo_dados",
@@ -334,10 +298,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "nao",
-            "sim"
-          ]
+          "selectValues": ["nao", "sim"]
         },
         {
           "name": "docs_data_solicitacao",
@@ -408,29 +369,21 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "aberta",
-            "resolvida"
-          ]
+          "selectValues": ["aberta", "resolvida"]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         },
         {
           "name": "tipo",
@@ -550,11 +503,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "triagem_documental",
-            "analise_juridica",
-            "arquivamento"
-          ]
+          "selectValues": ["triagem_documental", "analise_juridica", "arquivamento"]
         },
         {
           "name": "observacao",
@@ -574,19 +523,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": []
@@ -643,19 +587,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": []
@@ -722,19 +661,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": []
@@ -774,10 +708,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "pendente_aprovacao_juridica",
-            "aprovado"
-          ]
+          "selectValues": ["pendente_aprovacao_juridica", "aprovado"]
         },
         {
           "name": "itens_json",
@@ -809,19 +740,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -889,19 +815,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -930,10 +851,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "fisica",
-            "juridica"
-          ]
+          "selectValues": ["fisica", "juridica"]
         },
         {
           "name": "cpf_cnpj",
@@ -970,13 +888,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "solteiro",
-            "casado",
-            "divorciado",
-            "viuvo",
-            "uniao_estavel"
-          ]
+          "selectValues": ["solteiro", "casado", "divorciado", "viuvo", "uniao_estavel"]
         },
         {
           "name": "nacionalidade",
@@ -1025,19 +937,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -1108,12 +1015,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "Ativo",
-            "Suspenso",
-            "Arquivado",
-            "Encerrado"
-          ]
+          "selectValues": ["Ativo", "Suspenso", "Arquivado", "Encerrado"]
         },
         {
           "name": "tribunal",
@@ -1144,12 +1046,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "Baixa",
-            "Media",
-            "Alta",
-            "Urgente"
-          ]
+          "selectValues": ["Baixa", "Media", "Alta", "Urgente"]
         },
         {
           "name": "data_distribuicao",
@@ -1187,19 +1084,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -1284,19 +1176,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -1381,19 +1268,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [

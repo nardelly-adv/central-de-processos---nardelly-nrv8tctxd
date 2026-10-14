@@ -45,7 +45,7 @@ export interface AdvboxProxyResponse<T = unknown> {
 
 export interface AdvboxProxyStatus {
   configured: boolean
-  secretName: 'ADVBOX_API_TOKEN'
+  secretName: 'API_ADVBOX' | 'ADVBOX_API_TOKEN'
   baseUrl: string
 }
 
