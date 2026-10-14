@@ -5,13 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Scale, Lock, Mail, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react'
+import { Scale, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react'
 
 export const Login = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [email, setEmail] = useState('equipe@central.adv.br')
-  const [senha, setSenha] = useState('Central@123')
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
 
@@ -30,11 +30,6 @@ export const Login = () => {
     } finally {
       setCarregando(false)
     }
-  }
-
-  const preencherDemo = (demoEmail: string, demoSenha: string) => {
-    setEmail(demoEmail)
-    setSenha(demoSenha)
   }
 
   return (
@@ -61,7 +56,7 @@ export const Login = () => {
               <ShieldCheck className="h-5 w-5 text-teal-400" />
             </CardTitle>
             <CardDescription className="text-slate-400 text-xs">
-              Insira as credenciais da equipe compartilhada para gerenciar processos e clientes.
+              Insira suas credenciais institucionais para gerenciar processos e clientes.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -80,7 +75,7 @@ export const Login = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="equipe@central.adv.br"
+                    placeholder="nome@escritorio.adv.br"
                     className="pl-9 bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-teal-500"
                   />
                 </div>
@@ -129,49 +124,6 @@ export const Login = () => {
                 )}
               </Button>
             </form>
-
-            {/* Caixa de Demonstração Rápida */}
-            <div className="pt-4 border-t border-slate-800 space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-teal-400">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Acesso Rápido de Demonstração</span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Utilize o acesso unificado padrão configurado para a equipe do escritório:
-              </p>
-              <div className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/60 flex items-center justify-between text-xs">
-                <div>
-                  <p className="font-mono text-teal-300">equipe@central.adv.br</p>
-                  <p className="font-mono text-slate-400 text-[11px]">Senha: Central@123</p>
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => preencherDemo('equipe@central.adv.br', 'Central@123')}
-                  className="h-7 text-xs border-teal-700/50 text-teal-300 hover:bg-teal-900/50"
-                >
-                  Carregar
-                </Button>
-              </div>
-              <div className="bg-slate-800/40 p-2 rounded-lg border border-slate-800 flex items-center justify-between text-[11px]">
-                <div>
-                  <p className="text-slate-300">Dr. Ricardo (Advogado)</p>
-                  <p className="font-mono text-slate-500 text-[10px]">
-                    ricardo.advogado@central.local
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => preencherDemo('ricardo.advogado@central.local', 'Nardelly@2026')}
-                  className="h-6 text-[11px] text-slate-400 hover:text-white"
-                >
-                  Usar
-                </Button>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
