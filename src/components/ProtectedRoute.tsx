@@ -14,6 +14,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     'checking',
   )
   const [verifiedRole, setVerifiedRole] = useState('')
+  const [revalidating, setRevalidating] = useState(false)
   const activeRef = useRef(true)
   const checkingRef = useRef(false)
   const lastAllowedKeyRef = useRef<string | null>(null)
@@ -24,12 +25,17 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     checkingRef.current = true
 
     // Keep the protected screen mounted during focus revalidation so an open form
-    // retains its in-memory values. Initial loads and permission changes still gate.
-    if (lastAllowedKeyRef.current !== allowedKey) setStatus('checking')
+    // retains its in-memory values. Lock it until the server confirms this session.
+    const preserveScreen = lastAllowedKeyRef.current === allowedKey
+    if (preserveScreen) setRevalidating(true)
+    else setStatus('checking')
 
     if (!pb.authStore.isValid || !pb.authStore.record) {
       pb.authStore.clear()
-      if (activeRef.current) setStatus('anonymous')
+      if (activeRef.current) {
+        setRevalidating(false)
+        setStatus('anonymous')
+      }
       checkingRef.current = false
       return
     }
@@ -44,10 +50,14 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
       if (!activeRef.current) return
       setVerifiedRole(role)
       lastAllowedKeyRef.current = allowedKey
+      setRevalidating(false)
       setStatus(allowedKey && !allowedKey.split('|').includes(role) ? 'forbidden' : 'authenticated')
     } catch {
       pb.authStore.clear()
-      if (activeRef.current) setStatus('anonymous')
+      if (activeRef.current) {
+        setRevalidating(false)
+        setStatus('anonymous')
+      }
     } finally {
       checkingRef.current = false
     }
@@ -87,7 +97,25 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   if (status === 'forbidden') {
     return <Navigate to="/acesso-negado" replace state={{ role: verifiedRole }} />
   }
-  return <>{children}</>
+  return (
+    <div aria-busy={revalidating}>
+      <div
+        inert={revalidating ? true : undefined}
+        className={revalidating ? 'pointer-events-none' : undefined}
+      >
+        {children}
+      </div>
+      {revalidating && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-background/70"
+          role="status"
+          aria-live="polite"
+        >
+          Validando sessão no servidor…
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default ProtectedRoute
