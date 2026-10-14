@@ -13,6 +13,9 @@ import {
   Scale,
   ShieldCheck,
   PlugZap,
+  Globe2,
+  DollarSign,
+  CheckSquare,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -22,6 +25,15 @@ const NAV_ITEMS = [
   { to: '/clientes', label: 'Clientes', icon: Users },
   { to: '/documentos', label: 'Documentos', icon: FileText },
   { to: '/agenda', label: 'Agenda & Prazos', icon: Calendar },
+]
+
+const ADVBOX_NAV_ITEMS = [
+  { to: '/advbox', label: 'Painel AdvBox', icon: Globe2, exact: true },
+  { to: '/advbox/processos', label: 'Processos AdvBox', icon: Briefcase },
+  { to: '/advbox/clientes', label: 'Clientes AdvBox', icon: Users },
+  { to: '/advbox/financeiro', label: 'Financeiro AdvBox', icon: DollarSign },
+  { to: '/advbox/tarefas', label: 'Tarefas AdvBox', icon: CheckSquare },
+  { to: '/advbox/documentos', label: 'Documentos AdvBox', icon: FileText },
 ]
 
 export default function Layout() {
@@ -78,7 +90,9 @@ export default function Layout() {
             const Icon = item.icon
             const ativo =
               location.pathname === item.to ||
-              (item.to !== '/' && location.pathname.startsWith(item.to))
+              (item.to !== '/' &&
+                location.pathname.startsWith(item.to) &&
+                !location.pathname.startsWith('/advbox'))
             return (
               <Link
                 key={item.to}
@@ -95,6 +109,32 @@ export default function Layout() {
               </Link>
             )
           })}
+          <div className="pt-2 mt-2 border-t border-teal-800/80">
+            <div className="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-teal-300">
+              Integração AdvBox
+            </div>
+            {ADVBOX_NAV_ITEMS.map((item) => {
+              const Icon = item.icon
+              const ativo = item.exact
+                ? location.pathname === item.to
+                : location.pathname.startsWith(item.to)
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition ${
+                    ativo
+                      ? 'bg-teal-700 text-white shadow-sm font-semibold'
+                      : 'text-teal-200 hover:bg-teal-900/70 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </div>
           {papel === 'administracao' && (
             <>
               <Link
@@ -150,7 +190,9 @@ export default function Layout() {
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon
             const ativo =
-              item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to)
+              item.to === '/'
+                ? location.pathname === '/'
+                : location.pathname.startsWith(item.to) && !location.pathname.startsWith('/advbox')
             return (
               <Link
                 key={item.to}
@@ -166,6 +208,36 @@ export default function Layout() {
               </Link>
             )
           })}
+
+          {/* Seção AdvBox - visível para todos os usuários autenticados da equipe compartilhada */}
+          <div className="pt-4 mt-3 border-t border-slate-800">
+            <div className="px-3 pb-2 flex items-center justify-between">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-400">
+                AdvBox Conectado
+              </span>
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            </div>
+            {ADVBOX_NAV_ITEMS.map((item) => {
+              const Icon = item.icon
+              const ativo = item.exact
+                ? location.pathname === item.to
+                : location.pathname.startsWith(item.to)
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    ativo
+                      ? 'bg-teal-800 text-white shadow-xs font-semibold'
+                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                  }`}
+                >
+                  <Icon className={`h-3.5 w-3.5 ${ativo ? 'text-teal-300' : 'text-slate-400'}`} />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </div>
 
           {/* Links Administrativos se aplicável */}
           {papel === 'administracao' && (

@@ -18,6 +18,12 @@ import AcessoNegado from './pages/AcessoNegado'
 import AdminAdvbox from './pages/AdminAdvbox'
 import NovaFicha from './pages/NovaFicha'
 import CasoDetalhe from './pages/CasoDetalhe'
+import AdvboxDashboard from './pages/AdvboxDashboard'
+import AdvboxProcessos from './pages/AdvboxProcessos'
+import AdvboxClientes from './pages/AdvboxClientes'
+import AdvboxFinanceiro from './pages/AdvboxFinanceiro'
+import AdvboxTarefas from './pages/AdvboxTarefas'
+import AdvboxDocumentos from './pages/AdvboxDocumentos'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 
@@ -84,6 +90,56 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Agenda />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Rotas AdvBox - Acessíveis para todos os usuários autenticados da equipe compartilhada */}
+          <Route
+            path="/advbox"
+            element={
+              <ProtectedRoute>
+                <AdvboxDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/advbox/processos"
+            element={
+              <ProtectedRoute>
+                <AdvboxProcessos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/advbox/clientes"
+            element={
+              <ProtectedRoute>
+                <AdvboxClientes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/advbox/financeiro"
+            element={
+              <ProtectedRoute>
+                <AdvboxFinanceiro />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/advbox/tarefas"
+            element={
+              <ProtectedRoute>
+                <AdvboxTarefas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/advbox/documentos"
+            element={
+              <ProtectedRoute>
+                <AdvboxDocumentos />
               </ProtectedRoute>
             }
           />

@@ -41,6 +41,12 @@ export interface AdvboxProxyResponse<T = unknown> {
   upstreamStatus: number
   /** Parsed JSON response, or null for a 204 / empty response. */
   data: T | null
+  cached?: boolean
+  cacheAgeSeconds?: number
+  rateLimited?: boolean
+  stale?: boolean
+  warning?: string
+  error?: string
 }
 
 export interface AdvboxProxyStatus {

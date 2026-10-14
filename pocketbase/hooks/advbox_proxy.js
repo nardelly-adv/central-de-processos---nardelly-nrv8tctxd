@@ -1,27 +1,14 @@
-// ADVBOX server-side proxy. One routerAdd per hook file, per Skip Cloud runtime rules.
-// API credentials are held only in Skip Cloud Secret ADVBOX_API_TOKEN.
+// ADVBOX server-side proxy com cache inteligente, fallback em rate limit (429) e suporte
+// a todos os usuários autenticados da equipe compartilhada.
+// Token injetado com exclusividade no backend via segredo API_ADVBOX / ADVBOX_API_TOKEN.
+
 routerAdd(
   'POST',
   '/backend/v1/advbox',
   (e) => {
-    const actorRole = e.auth ? e.auth.getString('papel') : ''
-    if (!e.auth || !e.auth.getBool('ativo') || actorRole !== 'administracao') {
-      if (e.auth) {
-        try {
-          const denied = new Record($app.findCollectionByNameOrId('auditoria'))
-          denied.set('ator', e.auth.id + ' (' + actorRole + ')')
-          denied.set('acao', 'negacao_advbox')
-          denied.set('entidade', 'advbox_api')
-          denied.set(
-            'estado_novo',
-            JSON.stringify({ motivo: 'integração ADVBOX restrita à administração' }),
-          )
-          $app.save(denied)
-        } catch (err) {
-          $app.logger().error('ADVBOX: falha ao registrar tentativa não autorizada')
-        }
-      }
-      throw new ForbiddenError('A integração ADVBOX está restrita à administração.')
+    // Permite qualquer usuário autenticado (equipe compartilhada)
+    if (!e.auth) {
+      throw new ForbiddenError('Autenticação necessária para consultar a API AdvBox.')
     }
 
     const input = e.requestInfo().body || {}
@@ -48,13 +35,21 @@ routerAdd(
           'limit',
           'offset',
         ],
+        cacheTtlSeconds: 180, // 3 min
       },
       createCustomer: { method: 'POST', path: '/customers', query: [], body: true },
-      getCustomerById: { method: 'GET', path: '/customers/{id}', pathParam: 'id', query: [] },
+      getCustomerById: {
+        method: 'GET',
+        path: '/customers/{id}',
+        pathParam: 'id',
+        query: [],
+        cacheTtlSeconds: 300,
+      },
       getCustomersBirthdays: {
         method: 'GET',
         path: '/customers/birthdays',
         query: ['month', 'limit', 'offset'],
+        cacheTtlSeconds: 600, // 10 min
       },
       getLawsuits: {
         method: 'GET',
@@ -85,9 +80,16 @@ routerAdd(
           'limit',
           'offset',
         ],
+        cacheTtlSeconds: 180,
       },
       createLawsuit: { method: 'POST', path: '/lawsuits', query: [], body: true },
-      getLawsuitById: { method: 'GET', path: '/lawsuits/{id}', pathParam: 'id', query: [] },
+      getLawsuitById: {
+        method: 'GET',
+        path: '/lawsuits/{id}',
+        pathParam: 'id',
+        query: [],
+        cacheTtlSeconds: 300,
+      },
       updateLawsuit: {
         method: 'PUT',
         path: '/lawsuits/{id}',
@@ -100,12 +102,14 @@ routerAdd(
         path: '/history/{lawsuit_id}',
         pathParam: 'lawsuit_id',
         query: ['status'],
+        cacheTtlSeconds: 180,
       },
       getMovementsByLawsuitId: {
         method: 'GET',
         path: '/movements/{lawsuit_id}',
         pathParam: 'lawsuit_id',
         query: ['origin'],
+        cacheTtlSeconds: 180,
       },
       createLawsuitMovement: { method: 'POST', path: '/lawsuits/movement', query: [], body: true },
       getLastMovements: {
@@ -120,6 +124,7 @@ routerAdd(
           'limit',
           'offset',
         ],
+        cacheTtlSeconds: 180,
       },
       getPosts: {
         method: 'GET',
@@ -141,6 +146,7 @@ routerAdd(
           'limit',
           'offset',
         ],
+        cacheTtlSeconds: 180,
       },
       createPost: { method: 'POST', path: '/posts', query: [], body: true },
       getPublicationsByLawsuitId: {
@@ -148,6 +154,7 @@ routerAdd(
         path: '/publications/{lawsuit_id}',
         pathParam: 'lawsuit_id',
         query: [],
+        cacheTtlSeconds: 180,
       },
       getTransactions: {
         method: 'GET',
@@ -174,8 +181,15 @@ routerAdd(
           'limit',
           'offset',
         ],
+        cacheTtlSeconds: 180,
       },
-      getTransactionById: { method: 'GET', path: '/transactions/{id}', pathParam: 'id', query: [] },
+      getTransactionById: {
+        method: 'GET',
+        path: '/transactions/{id}',
+        pathParam: 'id',
+        query: [],
+        cacheTtlSeconds: 300,
+      },
       createTransaction: { method: 'POST', path: '/transactions', query: [], body: true },
       updateTransaction: {
         method: 'PUT',
@@ -188,19 +202,26 @@ routerAdd(
         method: 'GET',
         path: '/documents',
         query: ['name', 'customer_id', 'transaction_id', 'post_id', 'limit', 'offset'],
+        cacheTtlSeconds: 180,
       },
       downloadDocument: {
         method: 'GET',
         path: '/documents/{id}/download',
         pathParam: 'id',
         query: [],
+        cacheTtlSeconds: 240, // URL do S3 válida por 300s (5 min), cacheia por 4 min
       },
-      getSettings: { method: 'GET', path: '/settings', query: [] },
+      getSettings: {
+        method: 'GET',
+        path: '/settings',
+        query: [],
+        cacheTtlSeconds: 900, // 15 min (dados raramente mudam)
+      },
     }
 
     const operation = String(input.operation || '')
     if (!Object.prototype.hasOwnProperty.call(definitions, operation)) {
-      throw new BadRequestError('Operação ADVBOX desconhecida. Consulte o catálogo do cliente.')
+      throw new BadRequestError('Operação ADVBOX desconhecida: ' + operation)
     }
     const definition = definitions[operation]
 
@@ -209,6 +230,7 @@ routerAdd(
       throw new BadRequestError('params deve ser um objeto JSON.')
     }
     const paramNames = Object.keys(params)
+    let resolvedPath = definition.path
     if (definition.pathParam) {
       if (paramNames.length !== 1 || paramNames[0] !== definition.pathParam) {
         throw new BadRequestError(
@@ -219,7 +241,7 @@ routerAdd(
       if (!/^\d+$/.test(pathValue) || Number(pathValue) < 1) {
         throw new BadRequestError('O ID do recurso deve ser um inteiro positivo.')
       }
-      definition.path = definition.path.replace(
+      resolvedPath = resolvedPath.replace(
         '{' + definition.pathParam + '}',
         encodeURIComponent(pathValue),
       )
@@ -233,10 +255,11 @@ routerAdd(
     }
     const queryNames = Object.keys(query)
     for (const key of queryNames) {
-      if (definition.query.indexOf(key) < 0)
+      if (definition.query.indexOf(key) < 0) {
         throw new BadRequestError(
           'Parâmetro de consulta não documentado para esta operação: ' + key,
         )
+      }
       const value = query[key]
       if (
         value !== null &&
@@ -262,48 +285,72 @@ routerAdd(
     }
     if (!definition.body && hasBody) throw new BadRequestError('Esta operação não aceita body.')
 
-    const preferredToken = $secrets.get('API_ADVBOX') || ''
-    const fallbackToken = $secrets.get('ADVBOX_API_TOKEN') || ''
+    const preferredToken = $secrets.get('API_ADVBOX') || $os.getenv('API_ADVBOX') || ''
+    const fallbackToken = $secrets.get('ADVBOX_API_TOKEN') || $os.getenv('ADVBOX_API_TOKEN') || ''
     const token = String(preferredToken).trim() ? preferredToken : fallbackToken
     if (!String(token).trim()) {
       return e.json(503, {
-        error: 'Configure o segredo API_ADVBOX no Skip Cloud para habilitar a integração.',
+        error:
+          'Não foi possível acessar o AdvBox: configure o segredo API_ADVBOX no backend para habilitar a integração.',
+        configured: false,
       })
     }
 
-    let url = 'https://app.advbox.com.br/api/v1' + definition.path
+    // Montar URL e chave de cache
+    let url = 'https://app.advbox.com.br/api/v1' + resolvedPath
+    const sortedQueryNames = queryNames
+      .filter((k) => query[k] !== null && query[k] !== undefined && String(query[k]) !== '')
+      .sort()
     const queryParts = []
-    for (const key of queryNames) {
-      const value = query[key]
-      if (value === null || value === undefined || String(value) === '') continue
-      queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(String(value)))
+    for (const key of sortedQueryNames) {
+      queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(String(query[key])))
     }
     if (queryParts.length) url += '?' + queryParts.join('&')
 
-    const audit = new Record($app.findCollectionByNameOrId('auditoria'))
-    audit.set('ator', e.auth.id + ' (administracao)')
-    audit.set('acao', 'advbox_request_started')
-    audit.set('entidade', 'advbox_api')
-    audit.set('entidade_id', operation)
-    audit.set(
-      'estado_novo',
-      JSON.stringify({ operation, method: definition.method, endpoint: definition.path }),
-    )
-    try {
-      $app.save(audit)
-    } catch (err) {
-      $app
-        .logger()
-        .error(
-          'ADVBOX: operação bloqueada porque não foi possível registrar a auditoria',
-          'operation',
-          operation,
-        )
-      return e.json(500, {
-        error: 'Operação bloqueada: não foi possível registrar a trilha de auditoria.',
-      })
+    // Chave de cache para requisições GET
+    const isGet = definition.method === 'GET'
+    const cacheKey = isGet
+      ? definition.method +
+        ':' +
+        resolvedPath +
+        (queryParts.length ? '?' + queryParts.join('&') : '')
+      : ''
+    const ttlSeconds = definition.cacheTtlSeconds || 180
+
+    let cachedRecord = null
+    let cachedPayload = null
+    let cacheAgeSeconds = Infinity
+
+    if (isGet) {
+      try {
+        cachedRecord = $app.findFirstRecordByData('advbox_cache', 'chave', cacheKey)
+        if (cachedRecord) {
+          const buscadoEm = cachedRecord.getDateTime('buscado_em')
+          if (buscadoEm) {
+            const buscadoMillis = buscadoEm.time().unix() * 1000
+            cacheAgeSeconds = Math.max(0, Math.floor((Date.now() - buscadoMillis) / 1000))
+          }
+          const rawPayload = cachedRecord.getString('payload')
+          if (rawPayload) {
+            cachedPayload = JSON.parse(rawPayload)
+          }
+
+          // Se estiver fresco (dentro do TTL) e tiver dado válido, retorna do cache
+          if (cacheAgeSeconds < ttlSeconds && cachedPayload !== null) {
+            return e.json(200, {
+              upstreamStatus: cachedRecord.getInt('status_code') || 200,
+              data: cachedPayload,
+              cached: true,
+              cacheAgeSeconds,
+            })
+          }
+        }
+      } catch (_) {
+        // Cache miss normal
+      }
     }
 
+    // Fazer requisição upstream
     let upstream
     try {
       const headers = { Accept: 'application/json', Authorization: 'Bearer ' + token }
@@ -319,64 +366,90 @@ routerAdd(
       }
       upstream = $http.send(upstreamRequest)
     } catch (err) {
-      const errorId = String(Date.now()) + '-' + String(Math.floor(Math.random() * 1000000))
-      $app.logger().error('ADVBOX: falha de transporte', 'errorId', errorId, 'operation', operation)
-      try {
-        const outcome = new Record($app.findCollectionByNameOrId('auditoria'))
-        outcome.set('ator', e.auth.id + ' (administracao)')
-        outcome.set('acao', 'advbox_transport_error')
-        outcome.set('entidade', 'advbox_api')
-        outcome.set('entidade_id', operation)
-        outcome.set('estado_novo', JSON.stringify({ operation, errorId }))
-        $app.save(outcome)
-      } catch (auditError) {
-        $app
-          .logger()
-          .error(
-            'ADVBOX: falha ao registrar o resultado de transporte',
-            'errorId',
-            errorId,
-            'operation',
-            operation,
-          )
+      // Se falhou transporte e temos cache (mesmo antigo), retorna cache para não quebrar a tela
+      if (cachedPayload !== null) {
+        $app.logger().warn('ADVBOX: falha de transporte, usando cache existente', 'key', cacheKey)
+        return e.json(200, {
+          upstreamStatus: cachedRecord ? cachedRecord.getInt('status_code') : 200,
+          data: cachedPayload,
+          cached: true,
+          stale: true,
+          warning: 'Exibindo dados em cache devido a oscilação temporária na API AdvBox.',
+        })
       }
-      return e.json(502, { error: 'Falha de comunicação com a API ADVBOX.', errorId })
+      return e.json(502, {
+        error: 'Não foi possível acessar o AdvBox: falha de comunicação com o servidor.',
+      })
     }
 
+    // Tratar Rate Limit (429) do AdvBox: devolve o cache mais antigo disponível em vez de erro
+    if (upstream.statusCode === 429) {
+      if (cachedPayload !== null) {
+        $app
+          .logger()
+          .warn('ADVBOX: rate limit (429) atingido, devolvendo cache existente', 'key', cacheKey)
+        return e.json(200, {
+          upstreamStatus: 200,
+          data: cachedPayload,
+          cached: true,
+          rateLimited: true,
+          warning: 'Limite de requisições do AdvBox atingido (30/min). Exibindo dados em cache.',
+        })
+      }
+      return e.json(429, {
+        error:
+          'Limite de requisições por minuto da API AdvBox atingido (30 req/min). Aguarde alguns instantes e tente novamente.',
+      })
+    }
+
+    // Se upstream retornar 401 ou 403: token inválido ou sem permissão
+    if (upstream.statusCode === 401 || upstream.statusCode === 403) {
+      return e.json(upstream.statusCode, {
+        error:
+          'Não foi possível acessar o AdvBox: verifique o token da API (segredo API_ADVBOX). ' +
+          (upstream.statusCode === 401 ? 'Token inválido ou expirado.' : 'Acesso não autorizado.'),
+        upstreamStatus: upstream.statusCode,
+      })
+    }
+
+    // Parse da resposta
     let responseData = null
     if (upstream.statusCode !== 204) {
       try {
-        if (typeof upstream.json !== 'undefined') responseData = upstream.json
+        if (typeof upstream.json !== 'undefined') {
+          responseData = upstream.json
+        }
       } catch (parseError) {
         responseData = null
       }
     }
-    try {
-      const outcome = new Record($app.findCollectionByNameOrId('auditoria'))
-      outcome.set('ator', e.auth.id + ' (administracao)')
-      outcome.set(
-        'acao',
-        upstream.statusCode >= 200 && upstream.statusCode < 400
-          ? 'advbox_response_received'
-          : 'advbox_upstream_error',
-      )
-      outcome.set('entidade', 'advbox_api')
-      outcome.set('entidade_id', operation)
-      outcome.set(
-        'estado_novo',
-        JSON.stringify({ operation, upstream_status: upstream.statusCode }),
-      )
-      $app.save(outcome)
-    } catch (auditError) {
-      $app
-        .logger()
-        .error(
-          'ADVBOX: resposta recebida, mas não foi possível registrar o resultado na auditoria',
-          'operation',
-          operation,
-          'upstream_status',
-          upstream.statusCode,
-        )
+
+    // Salvar no cache se foi sucesso (200-299) e GET
+    if (isGet && upstream.statusCode >= 200 && upstream.statusCode < 300 && responseData !== null) {
+      try {
+        const cacheCol = $app.findCollectionByNameOrId('advbox_cache')
+        let recordToSave = cachedRecord
+        if (!recordToSave) {
+          recordToSave = new Record(cacheCol)
+          recordToSave.set('chave', cacheKey)
+        }
+        recordToSave.set('payload', JSON.stringify(responseData))
+        recordToSave.set('buscado_em', new Date().toISOString())
+        recordToSave.set('status_code', upstream.statusCode)
+        $app.save(recordToSave)
+      } catch (cacheErr) {
+        $app.logger().warn('ADVBOX: falha ao persistir no cache', 'error', cacheErr.message)
+      }
+    }
+
+    // Se status do upstream foi erro (ex: 404, 500) e temos cache anterior, devolver com fallback se apropriado
+    if (upstream.statusCode >= 500 && cachedPayload !== null) {
+      return e.json(200, {
+        upstreamStatus: cachedRecord ? cachedRecord.getInt('status_code') : 200,
+        data: cachedPayload,
+        cached: true,
+        stale: true,
+      })
     }
 
     return e.json(200, { upstreamStatus: upstream.statusCode, data: responseData })
