@@ -1,7 +1,15 @@
 // F1-T01 · RN-003 — Auditoria: alteração de caso (estados anterior e novo)
 onRecordUpdateRequest((e) => {
-  const trilha = $app.findCollectionByNameOrId('auditoria')
   const antes = e.record.original()
+  if (
+    antes.getString('estado_operacional') !== e.record.getString('estado_operacional') ||
+    antes.getString('excecao_justificativa') !== e.record.getString('excecao_justificativa') ||
+    antes.getString('excecao_por') !== e.record.getString('excecao_por')
+  ) {
+    e.next()
+    return
+  }
+  const trilha = $app.findCollectionByNameOrId('auditoria')
   const entrada = new Record(trilha)
   entrada.set(
     'ator',

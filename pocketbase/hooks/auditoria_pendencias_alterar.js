@@ -5,6 +5,13 @@ onRecordUpdateRequest((e) => {
   const antes = e.record.original()
   const virouResolvida =
     antes.getString('status') !== 'resolvida' && e.record.getString('status') === 'resolvida'
+  const ehDocumental = e.record.getString('tipo') === 'documental' || !!e.record.getString('checklist_id')
+  const camposProtegidos = ['estado_documental', 'status', 'obrigatoria', 'checklist_id', 'item_chave', 'motivo_devolucao', 'orientacao', 'validada_por', 'validada_em', 'reenvio_de']
+  for (const campo of camposProtegidos) {
+    const atual = String(e.record.get(campo) || '')
+    const antigo = String(antes.get(campo) || '')
+    if (atual !== antigo && ehDocumental) { e.next(); return }
+  }
   const papel = e.auth ? e.auth.getString('papel') : ''
 
   if (virouResolvida && papel !== 'operacao_documental') {

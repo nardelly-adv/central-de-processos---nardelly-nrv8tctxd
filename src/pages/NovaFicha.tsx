@@ -95,8 +95,20 @@ const NovaFicha = () => {
         status: 'aberto',
         ...ficha,
       })
-      setMsg('Ficha registrada. Pendências de dados faltantes foram geradas automaticamente.')
-      navigate('/caso/' + resultado.id)
+      let alerta: string | undefined
+      if (ficha.familia_beneficio === 'rural') {
+        try {
+          await pb.send(`/backend/v1/casos/${resultado.id}/instanciar-checklist`, { method: 'POST' })
+        } catch (erroChecklist: any) {
+          alerta = `A ficha foi registrada, mas o checklist demonstrativo não foi vinculado: ${erroChecklist?.response?.message || 'tipo rural sem correspondência'}. Nenhuma ficha foi perdida.`
+        }
+      }
+      if (alerta) {
+        navigate('/caso/' + resultado.id, { state: { alert: alerta } })
+      } else {
+        setMsg('Ficha registrada. Pendências de dados faltantes foram geradas automaticamente.')
+        navigate('/caso/' + resultado.id)
+      }
     } catch (e: any) {
       setErro(e?.response?.message || 'Falha ao registrar a ficha.')
     } finally {
