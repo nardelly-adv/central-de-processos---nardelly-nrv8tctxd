@@ -110,23 +110,37 @@ const CasoDetalhe = () => {
     setAcao((a) => ({ ...a, [pid]: { ...(a[pid] || {}), [campo]: valor } }))
   const rotulos: Record<string, string> = {
     data_atendimento: 'Data do atendimento',
-    canal: 'Canal',
-    atendente: 'Atendente',
-    indicacao: 'Indicação',
-    nome_atendido: 'Pessoa atendida',
-    cpf_atendido: 'CPF da pessoa atendida',
-    familia_beneficio: 'Família do benefício',
-    tipo_beneficio: 'Tipo do benefício',
-    nome_titular: 'Titular',
+    canal: 'Atendimento realizado',
+    canal_detalhe: 'Detalhe do atendimento',
+    atendente: 'Quem está fazendo o atendimento?',
+    indicacao: 'Indicação (quem indicou o escritório?)',
+    nome_atendido: 'Nome da pessoa que está sendo atendida',
+    cpf_atendido: 'CPF da pessoa que está sendo atendida',
+    atendido_e_titular: 'O segurado/cliente atendido é o titular/autor do processo?',
+    vinculo_atendido: 'Vínculo da pessoa atendida com o titular',
+    vinculo_outro: 'Outro parentesco (especificar)',
+    representante_especificacao: 'Representante do titular (tutor nato, curador ou guarda)',
+    familia_beneficio: 'Família do benefício (LOAS, urbano ou rural)',
+    tipo_beneficio: 'Tipo específico de benefício',
+    nome_titular: 'Nome do titular do benefício (autor do processo)',
     cpf_titular: 'CPF do titular',
-    nascimento_titular: 'Nascimento do titular',
-    telefone_titular: 'Telefone do titular',
-    endereco_titular: 'Endereço do titular',
-    escolaridade: 'Escolaridade',
-    profissao: 'Profissão',
-    parente_ja_atendido: 'Parente já atendeu?',
-    contrato_assinado: 'Contrato assinado?',
-    rural_dados: 'Bloco rural',
+    nascimento_titular: 'Data de nascimento do titular',
+    telefone_titular: 'Telefone para contato do titular',
+    endereco_titular: 'Endereço completo do titular',
+    filiado: 'É filiado ao sindicato?',
+    sindicato_nome: 'Qual sindicato?',
+    escolaridade: 'Estudou até qual série?',
+    profissao: 'Profissão (com o que trabalha atualmente?)',
+    parente_ja_atendido: 'Algum parente do cliente já mexeu com processo no escritório?',
+    parente_dados: 'Parente que já teve processo no escritório',
+    solicitou_documentos: 'Durante o atendimento, solicitou documentos ao cliente?',
+    docs_data_solicitacao: 'Data da solicitação dos documentos',
+    docs_prazo_entrega: 'Prazo para entrega dos documentos',
+    contrato_assinado: 'Cliente assina?',
+    assinatura_rogo_dados: 'Quem assinou à rogo? (dados do assinante)',
+    loas_dados: 'Questionamentos sobre LOAS (benefício assistencial)',
+    urbano_dados: 'Questionamentos sobre benefícios urbanos',
+    rural_dados: 'Questionamentos gerais sobre benefícios rurais',
   }
 
   return (
@@ -136,7 +150,7 @@ const CasoDetalhe = () => {
           <div>
             <h1 className="text-xl font-semibold">{caso?.titulo || 'Caso'}</h1>
             <p className="text-sm text-muted-foreground">
-              Checklist, documentos e histórico do caso
+              Ficha de atendimento, documentos e histórico do caso
             </p>
           </div>
           <Button asChild variant="outline">
@@ -169,9 +183,7 @@ const CasoDetalhe = () => {
         )}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">
-              Pendências documentais ({pendencias.length})
-            </CardTitle>
+            <CardTitle className="text-base">Documentos pendentes ({pendencias.length})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             {pendencias.length === 0 ? (
@@ -191,8 +203,8 @@ const CasoDetalhe = () => {
                       <TableCell className="align-top">
                         <p>{p.descricao}</p>
                         <p className="text-xs text-muted-foreground">
-                          {p.obrigatoria ? 'Obrigatória' : 'Opcional'} ·{' '}
-                          {p.item_chave || 'item legado'}
+                          {p.obrigatoria ? 'Obrigatória' : 'Opcional'}
+                          {p.item_chave ? ` · ${p.item_chave}` : ''}
                         </p>
                       </TableCell>
                       <TableCell className="align-top">
@@ -202,7 +214,7 @@ const CasoDetalhe = () => {
                       </TableCell>
                       <TableCell>
                         <div className="min-w-[260px] space-y-2">
-                          <Label htmlFor={'estado-' + p.id}>Novo estado</Label>
+                          <Label htmlFor={'estado-' + p.id}>Estado do documento</Label>
                           <select
                             id={'estado-' + p.id}
                             className="flex h-10 w-full rounded-md border bg-background px-3 text-sm"
@@ -255,19 +267,23 @@ const CasoDetalhe = () => {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Avanço para pronto para triagem</CardTitle>
+            <CardTitle className="text-base">
+              Situação do caso e encaminhamento para triagem
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              O sistema bloqueia o avanço enquanto houver documento obrigatório não validado. O
-              advogado responsável pode registrar uma exceção justificada, que ficará auditada.
+              O caso não pode ficar pronto para triagem enquanto houver documento obrigatório sem
+              validação. O advogado responsável pode registrar uma exceção justificada, que fica
+              auditada.
             </p>
             <Textarea
-              placeholder="Justificativa da exceção jurídica (somente advogado responsável)"
+              aria-label="Justificativa da exceção jurídica"
+              placeholder="Justificativa da exceção jurídica — somente advogado responsável"
               value={excecao}
               onChange={(e) => setExcecao(e.target.value)}
             />
-            <Button onClick={() => void avancar()}>Tentar avançar</Button>
+            <Button onClick={() => void avancar()}>Marcar como pronto para triagem</Button>
           </CardContent>
         </Card>
       </div>

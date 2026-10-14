@@ -102,7 +102,9 @@ const NovaFicha = () => {
       <div className="mx-auto max-w-3xl space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold">Nova ficha de intake</h1>
+            <h1 className="text-xl font-semibold">
+              Ficha de atendimento ao cliente — demandas previdenciárias
+            </h1>
             <p className="text-sm text-muted-foreground">
               Campos obrigatórios faltantes viram pendências explícitas do caso — nada se perde.
             </p>
@@ -125,7 +127,7 @@ const NovaFicha = () => {
         <form onSubmit={salvar} className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Atendimento</CardTitle>
+              <CardTitle className="text-base">Dados do atendimento</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -138,7 +140,7 @@ const NovaFicha = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="canal">Canal</Label>
+                <Label htmlFor="canal">Atendimento realizado</Label>
                 <select
                   id="canal"
                   className={selectClass}
@@ -158,7 +160,11 @@ const NovaFicha = () => {
               ) && (
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="canal_detalhe">
-                    Detalhe do canal (sindicato, local ou parceiro)
+                    {ficha.canal === 'presencial_sindicato'
+                      ? 'Presencialmente em sindicato, qual sindicato?'
+                      : ficha.canal === 'presencial_externo'
+                        ? 'Presencialmente, atendimento externo, onde?'
+                        : 'Atendimento indireto: qual parceiro/pessoa indicou o processo?'}
                   </Label>
                   <Input
                     id="canal_detalhe"
@@ -168,7 +174,7 @@ const NovaFicha = () => {
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="atendente">Atendente (quem preencheu)</Label>
+                <Label htmlFor="atendente">Quem está fazendo o atendimento?</Label>
                 <Input
                   id="atendente"
                   value={ficha.atendente}
@@ -177,13 +183,13 @@ const NovaFicha = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="indicacao">
-                  Indicação (nome, telefone e detalhes de quem indicou)
-                </Label>
-                <Input
+                <Label htmlFor="indicacao">Indicação (quem indicou o escritório?)</Label>
+                <Textarea
                   id="indicacao"
+                  rows={3}
                   value={ficha.indicacao}
                   onChange={(e) => set('indicacao', e.target.value)}
+                  placeholder="Nome: …\nTelefone: …\nDetalhes da pessoa que indicou (reside onde? É cônjuge de quem? Já foi cliente? Onde trabalha?)"
                 />
               </div>
             </CardContent>
@@ -191,7 +197,7 @@ const NovaFicha = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Pessoa atendida</CardTitle>
+              <CardTitle className="text-base">Do atendimento</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -203,7 +209,7 @@ const NovaFicha = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cpf_atendido">CPF da pessoa atendida</Label>
+                <Label htmlFor="cpf_atendido">CPF da pessoa que está sendo atendida</Label>
                 <Input
                   id="cpf_atendido"
                   value={ficha.cpf_atendido}
@@ -255,7 +261,7 @@ const NovaFicha = () => {
                   {ficha.vinculo_atendido === 'representante' && (
                     <div className="space-y-2">
                       <Label htmlFor="representante_especificacao">
-                        Especificação do representante
+                        Representante do titular (tutor nato, curador ou tem a guarda?)
                       </Label>
                       <Input
                         id="representante_especificacao"
@@ -272,11 +278,15 @@ const NovaFicha = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Benefício e titular</CardTitle>
+              <CardTitle className="text-base">
+                Do processo — dados do titular do benefício (autor do processo)
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="familia_beneficio">Família do benefício</Label>
+                <Label htmlFor="familia_beneficio">
+                  Família do benefício (LOAS, urbano ou rural)
+                </Label>
                 <select
                   id="familia_beneficio"
                   className={selectClass}
@@ -292,7 +302,9 @@ const NovaFicha = () => {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="tipo_beneficio">Tipo específico do benefício</Label>
+                <Label htmlFor="tipo_beneficio">
+                  Especifique o tipo de benefício que o cliente deseja
+                </Label>
                 <Input
                   id="tipo_beneficio"
                   value={ficha.tipo_beneficio}
@@ -301,7 +313,9 @@ const NovaFicha = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nome_titular">Nome do titular</Label>
+                <Label htmlFor="nome_titular">
+                  Nome do titular do benefício (autor do processo)
+                </Label>
                 <Input
                   id="nome_titular"
                   value={ficha.nome_titular}
@@ -347,7 +361,9 @@ const NovaFicha = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Dados complementares do titular</CardTitle>
+              <CardTitle className="text-base">
+                Dados complementares do titular do benefício (autor do processo)
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -438,47 +454,55 @@ const NovaFicha = () => {
               {ficha.familia_beneficio === 'loas' && (
                 <div className="space-y-2">
                   <Label htmlFor="loas_dados">
-                    LOAS — idoso (idade) ou pessoa com deficiência; renda; CadÚnico; moradia; grupo
-                    familiar (sem limite fixo); gastos
+                    Em caso de LOAS (benefício assistencial), responda abaixo
                   </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Os tópicos abaixo são respondidos em texto livre. O grupo familiar pode incluir
+                    qualquer número de pessoas.
+                  </p>
                   <Textarea
                     id="loas_dados"
                     rows={4}
                     value={ficha.loas_dados}
                     onChange={(e) => set('loas_dados', e.target.value)}
+                    placeholder="Idoso: idade. Pessoa com deficiência: descreva. Tem renda? Esclareça a fonte e o valor. Tem CadÚnico? Mora em casa, na rua ou em abrigo? Quantas pessoas moram junto? Informe integrantes do grupo familiar, parentesco, CPF e renda (sem limite fixo de pessoas). Esclareça gastos (aluguel, medicamentos, consultas, exames e outros)."
                   />
                 </div>
               )}
               {ficha.familia_beneficio === 'urbano' && (
                 <div className="space-y-2">
                   <Label htmlFor="urbano_dados">
-                    Benefícios urbanos — aposentadoria, salário-maternidade ou incapacidade; idade;
-                    benefícios anteriores; pedidos negados; ações judiciais; carteira/carnês;
-                    atividade rural e urbana; estado civil; perguntas condicionais de incapacidade,
-                    salário-maternidade, pensão por morte e auxílio-reclusão
+                    Dos benefícios urbanos — responda às perguntas aplicáveis abaixo
                   </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Use o campo de texto para as respostas aplicáveis ao benefício selecionado. Os
+                    tópicos abaixo seguem a ficha de atendimento.
+                  </p>
                   <Textarea
                     id="urbano_dados"
                     rows={4}
                     value={ficha.urbano_dados}
                     onChange={(e) => set('urbano_dados', e.target.value)}
+                    placeholder="Especifique o tipo. Informe idade (homem: 65; mulher: 62), benefícios anteriores, pedidos negados, ações judiciais, trabalho com carteira/contrato e contribuições em carnê/MEI. Sempre trabalhou em atividade urbana ou também rural? Informe períodos e estado civil/companheiro. Em incapacidade: situação de trabalho ao adoecer e afastamentos. Em salário-maternidade: dados dos filhos e situação de trabalho no nascimento. Em pensão por morte/auxílio-reclusão: pessoa instituidora/presa, data e dependentes."
                   />
                 </div>
               )}
               {ficha.familia_beneficio === 'rural' && (
                 <div className="space-y-2">
                   <Label htmlFor="rural_dados">
-                    Benefícios rurais — qual benefício; terras onde trabalhou (nome, titularidade,
-                    período e com quem trabalhou); períodos de união e companheiros; filhos; pais;
-                    benefícios anteriores, negativas, ações judiciais e vínculos urbanos/rurais. As
-                    provas documentais rurais são exemplificativas e estão pendentes de aprovação
-                    jurídica.
+                    Dos benefícios rurais — questionamentos gerais
                   </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Use o campo de texto para as respostas aplicáveis ao benefício rural
+                    selecionado. Os exemplos de prova rural não são uma lista fechada nem um
+                    checklist jurídico aprovado.
+                  </p>
                   <Textarea
                     id="rural_dados"
                     rows={4}
                     value={ficha.rural_dados}
                     onChange={(e) => set('rural_dados', e.target.value)}
+                    placeholder="Especifique o benefício. Informe benefícios anteriores, pedidos negados, ações judiciais, trabalho com carteira e terras onde trabalhou (nome, a quem pertenciam, períodos e com quem trabalhou). Informe estado civil e períodos de união/companheiros, filhos e pais. Para salário-maternidade, incapacidade, pensão por morte ou auxílio-reclusão, informe também os dados pertinentes ao benefício e seus dependentes. As provas rurais são exemplificativas e estão pendentes de aprovação jurídica."
                   />
                 </div>
               )}
@@ -534,7 +558,7 @@ const NovaFicha = () => {
                 </>
               )}
               <div className="space-y-2">
-                <Label htmlFor="contrato_assinado">O cliente assina/assinou o contrato?</Label>
+                <Label htmlFor="contrato_assinado">Cliente assina?</Label>
                 <select
                   id="contrato_assinado"
                   className={selectClass}
@@ -549,7 +573,7 @@ const NovaFicha = () => {
               {ficha.contrato_assinado === 'nao' && (
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="assinatura_rogo_dados">
-                    Dados do assinante à rogo / procuração pública
+                    Quem assinou à rogo? (dados do assinante e procuração pública, se providenciada)
                   </Label>
                   <Input
                     id="assinatura_rogo_dados"
