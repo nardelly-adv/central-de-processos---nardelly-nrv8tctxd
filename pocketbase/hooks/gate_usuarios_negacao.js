@@ -1,5 +1,9 @@
 // F1-T01 · RN-002/CA-1-002 — Negação auditada: gerenciar usuários é da administração
 onRecordCreateRequest((e) => {
+  if (e.hasSuperuserAuth()) {
+    return e.next()
+  }
+
   const papel = e.auth ? e.auth.getString('papel') : ''
   if (!e.auth || papel !== 'administracao') {
     try {
