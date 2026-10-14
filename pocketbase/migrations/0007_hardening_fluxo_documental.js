@@ -83,6 +83,12 @@ migrate(
     checklists.createRule = null
     checklists.updateRule = null
 
+    // Salvar as alterações de schema antes de inserir versões que dependem do campo created.
+    app.save(casos)
+    app.save(pendencias)
+    app.save(protocolos)
+    app.save(checklists)
+
     // Os itens demonstrativos explicitamente rotulados como pendentes deixam de bloquear.
     const itensLegados = app.findRecordsByFilter(
       'pendencias',
@@ -170,10 +176,6 @@ migrate(
       )
       app.save(log)
     }
-    app.save(casos)
-    app.save(pendencias)
-    app.save(protocolos)
-    app.save(checklists)
   },
   (app) => {
     // Segurança: manter schema/índices vinculados a registros já criados; não descartar evidência documental.
