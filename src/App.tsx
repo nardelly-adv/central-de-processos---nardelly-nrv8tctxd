@@ -15,6 +15,7 @@ import Login from './pages/Login'
 import AdminUsuarios from './pages/AdminUsuarios'
 import Auditoria from './pages/Auditoria'
 import AcessoNegado from './pages/AcessoNegado'
+import AdminAdvbox from './pages/AdminAdvbox'
 import NovaFicha from './pages/NovaFicha'
 import CasoDetalhe from './pages/CasoDetalhe'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -93,6 +94,14 @@ const App = () => (
             element={
               <ProtectedRoute allowedRoles={['administracao']}>
                 <AdminUsuarios />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/advbox"
+            element={
+              <ProtectedRoute allowedRoles={['administracao']}>
+                <AdminAdvbox />
               </ProtectedRoute>
             }
           />

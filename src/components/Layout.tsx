@@ -12,6 +12,7 @@ import {
   X,
   Scale,
   ShieldCheck,
+  PlugZap,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -95,14 +96,24 @@ export default function Layout() {
             )
           })}
           {papel === 'administracao' && (
-            <Link
-              to="/admin/usuarios"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-teal-100 hover:bg-teal-900/70"
-            >
-              <ShieldCheck className="h-4 w-4" />
-              Usuários & Papéis
-            </Link>
+            <>
+              <Link
+                to="/admin/usuarios"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-teal-100 hover:bg-teal-900/70"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                Usuários & Papéis
+              </Link>
+              <Link
+                to="/admin/advbox"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-teal-100 hover:bg-teal-900/70"
+              >
+                <PlugZap className="h-4 w-4" />
+                Integração ADVBOX
+              </Link>
+            </>
           )}
           <div className="pt-2 border-t border-teal-800/80">
             <button
@@ -172,6 +183,17 @@ export default function Layout() {
               >
                 <ShieldCheck className="h-4 w-4 text-slate-400" />
                 Usuários do Escritório
+              </Link>
+              <Link
+                to="/admin/advbox"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                  location.pathname === '/admin/advbox'
+                    ? 'bg-teal-700 text-white'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <PlugZap className="h-4 w-4 text-slate-400" />
+                Integração ADVBOX
               </Link>
             </div>
           )}
