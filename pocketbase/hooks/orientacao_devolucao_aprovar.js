@@ -14,12 +14,48 @@ routerAdd(
     const anterior = pendencia.getString('orientacao')
     const actor = e.auth.id
     const agora = new Date().toISOString()
+    const estadoInicial = pendencia.getString('estado_documental')
+    if (estadoInicial !== 'recebida' && estadoInicial !== 'em_conferencia') {
+      throw new BadRequestError(
+        'Aprovação de orientação permitida apenas quando o estado documental for recebida ou em conferência.',
+      )
+    }
+    if (pendencia.getString('orientacao_aprovada_por')) {
+      throw new BadRequestError('Orientação já aprovada; não pode ser sobrescrita.')
+    }
+
     $app.runInTransaction((tx) => {
-      pendencia.set('orientacao', orientacao)
-      pendencia.set('orientacao_aprovada_por', actor)
-      pendencia.set('orientacao_aprovada_em', agora)
-      tx.save(pendencia)
-      const log = new Record($app.findCollectionByNameOrId('auditoria'))
+      const reloaded = tx.findRecordById('pendencias', pendencia.id)
+      const estadoDocTx = reloaded.getString('estado_documental')
+      if (estadoDocTx !== 'recebida' && estadoDocTx !== 'em_conferencia') {
+        throw new BadRequestError(
+          'Aprovação de orientação permitida apenas quando o estado documental for recebida ou em conferência.',
+        )
+      }
+      if (reloaded.getString('orientacao_aprovada_por')) {
+        throw new BadRequestError('Orientação já aprovada; não pode ser sobrescrita.')
+      }
+
+      const res = tx
+        .db()
+        .newQuery(
+          "UPDATE pendencias SET orientacao = {:orientacao}, orientacao_aprovada_por = {:actor}, orientacao_aprovada_em = {:agora}, updated = {:agora} WHERE id = {:id} AND (orientacao_aprovada_por = '' OR orientacao_aprovada_por IS NULL) AND estado_documental IN ('recebida', 'em_conferencia')",
+        )
+        .bind({
+          id: pendencia.id,
+          orientacao: orientacao,
+          actor: actor,
+          agora: agora,
+        })
+        .execute()
+
+      if (res.rowsAffected() === 0) {
+        throw new BadRequestError(
+          'Orientação já aprovada ou estado documental não elegível; alteração recusada.',
+        )
+      }
+
+      const log = new Record(tx.findCollectionByNameOrId('auditoria'))
       log.set('ator', e.auth.getString('email') + ' (advogado_responsavel)')
       log.set('acao', 'aprovar_orientacao_devolucao')
       log.set('entidade', 'pendencias')
@@ -28,7 +64,7 @@ routerAdd(
         'estado_anterior',
         JSON.stringify({
           orientacao: anterior,
-          aprovada: !!pendencia.original().getString('orientacao_aprovada_por'),
+          aprovada: false,
         }),
       )
       log.set('estado_novo', JSON.stringify({ orientacao, aprovador: actor, aprovada_em: agora }))
